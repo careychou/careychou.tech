@@ -6,7 +6,7 @@
 # After that, every publish is just: ./deploy.sh
 set -euo pipefail
 
-PROJECT_NAME="careychou"
+PROJECT_NAME="careychou-cintegral"
 
 echo "→ Deploying ./site to Cloudflare Pages project: $PROJECT_NAME"
 npx wrangler pages deploy ./site --project-name "$PROJECT_NAME" --commit-dirty=true
