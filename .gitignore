@@ -4,3 +4,6 @@ node_modules/
 *.log
 .dev.vars
 devserver.out
+
+cf-*.png
+wrangler-login.out
