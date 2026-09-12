@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gallery — Liquid Glass &amp; Flow · Carey Chou</title>
+  <meta name="description" content="AI-assisted generative art by Carey Chou — the liquid glass and flow concept, gradient fields, and interactive infographics." />
+  <meta name="theme-color" content="#05070f" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/site.css" />
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="flow-field" aria-hidden="true">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span>
+  </div>
+
+  <nav class="nav" aria-label="Primary">
+    <div class="wrap">
+      <a class="brand" href="/"><span class="mark" aria-hidden="true"></span> Carey&nbsp;Chou</a>
+      <div class="nav-links">
+        <a href="/#writing" class="hide-sm">Writing</a>
+        <a href="/#art" class="hide-sm">Art</a>
+        <a href="/">← Home</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+    <header class="hero wrap" style="padding-bottom:1rem">
+      <p class="eyebrow">Creative studio</p>
+      <h1 style="max-width:18ch">Liquid&nbsp;glass <span class="gradient-text">&amp;</span> flow.</h1>
+      <p class="lede">Visual thinking made with AI as a collaborator — refraction, translucency and motion turned into pieces you can feel. The <strong>liquid glass + flow</strong> language began as a concept for my Albertsons case and grew into a way of seeing.</p>
+    </header>
+
+    <section class="wrap">
+      <div class="gallery">
+        <article class="art-tile reveal" data-tilt aria-label="Liquid Glass I — refraction study">
+          <span class="canvas lg" aria-hidden="true"></span>
+          <span class="meta"><h3>Liquid Glass I</h3><span>Refraction study · gradient field</span></span>
+        </article>
+        <article class="art-tile reveal" data-tilt aria-label="Flow — Albertsons concept">
+          <span class="canvas lg alt" aria-hidden="true"></span>
+          <span class="meta"><h3>Flow — Albertsons concept</h3><span>Motion &amp; continuity</span></span>
+        </article>
+        <article class="art-tile reveal" data-tilt aria-label="Liquid Glass II — spectral">
+          <span class="canvas lg" style="background:linear-gradient(135deg,var(--mint),var(--iris))" aria-hidden="true"></span>
+          <span class="meta"><h3>Liquid Glass II</h3><span>Spectral · caustics</span></span>
+        </article>
+
+        <div class="art-tile placeholder glass reveal" style="aspect-ratio:4/3">
+          <div>
+            <div class="plus" aria-hidden="true">＋</div>
+            <p>Next: your public HTML infographics, dropped in and linked here.</p>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin:2rem 0;color:var(--ink-dim);max-width:60ch">
+        These CSS pieces are placeholders standing in for the real work. When you're ready, we port your
+        public (non-confidential) HTML infographics into <code>site/art/</code>, and each becomes a tile here
+        with its own full-screen page.
+      </p>
+      <a class="btn btn-ghost" href="/">← Back home</a>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <a class="brand" href="/"><span class="mark" aria-hidden="true"></span> Carey Chou</a>
+      <nav class="socials" aria-label="Elsewhere">
+        <a href="https://medium.com/@carey.chou" target="_blank" rel="noopener">Medium ↗</a>
+        <a href="https://www.linkedin.com/in/careychou/" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="/assets/site.js" defer></script>
+</body>
+</html>

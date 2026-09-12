@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  ============================================================
+  MEDIUM-PORTABLE POST TEMPLATE
+  ============================================================
+  Goal: write a post ONCE as HTML here, publish it to Medium
+  without losing fidelity.
+
+  HOW TO PUBLISH TO MEDIUM WITH FULL FIDELITY
+  -------------------------------------------
+  Highest fidelity — use Medium's importer (keeps headings, bold,
+  quotes, images, links, order):
+    1. Deploy this page (./deploy.sh) so it has a public URL, e.g.
+       https://careychou.tech/writing/my-post.html
+    2. On Medium: profile ▸ "Write" ▸ "..." menu ▸ "Import a story"
+       ▸ paste the URL ▸ Import. Medium rebuilds it as a native draft.
+    3. Review, add tags, publish.
+
+  Alternative — copy-paste: open the page, select the article body,
+  copy, paste into a Medium draft. Structure/bold/quotes/images survive.
+
+  FIDELITY RULES (why this template only uses these elements)
+  -----------------------------------------------------------
+  Medium keeps ONLY: h1 (title), h2/h3 subheads, p, <strong>/<em>,
+  <blockquote>, <ul>/<ol>/<li>, <figure><img><figcaption>, <pre><code>,
+  <hr>, links, and embeds (YouTube/Tweet/GitHub gist via a bare URL
+  on its own line). It DROPS: custom CSS, classes, colors, columns,
+  <div> layout, inline styles. So keep the ARTICLE BODY to the tags
+  above — all the site styling lives in site.css and is ignored by
+  Medium, which is exactly what we want.
+
+  For a rich INFOGRAPHIC: export it as a PNG/SVG and place it in a
+  <figure> — it embeds as an image on Medium at full fidelity. Link the
+  caption to the live interactive version here on careychou.tech.
+  ============================================================
+-->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post title — Carey Chou</title>
+  <meta name="description" content="One-sentence summary used for previews and Medium import." />
+  <meta name="theme-color" content="#05070f" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/site.css" />
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="flow-field" aria-hidden="true">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span>
+  </div>
+
+  <nav class="nav" aria-label="Primary">
+    <div class="wrap">
+      <a class="brand" href="/"><span class="mark" aria-hidden="true"></span> Carey&nbsp;Chou</a>
+      <div class="nav-links">
+        <a href="/#writing" class="hide-sm">Writing</a>
+        <a href="/#art" class="hide-sm">Art</a>
+        <a href="/">← Home</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+    <article class="article wrap">
+      <!-- ===== The parts below import cleanly into Medium ===== -->
+      <header>
+        <h1>Your post title goes here</h1>
+        <p class="dek">A one- or two-sentence standfirst that hooks the reader and doubles as the Medium subtitle.</p>
+        <p class="byline"><span>Carey Chou</span> · <span>Mon DD, YYYY</span> · <span>7 min read</span></p>
+      </header>
+
+      <div class="article-body">
+        <p>Open with the concrete situation, not the abstraction. Lead with a scene the reader recognizes, then name the tension. Everything in this body block uses only Medium-safe tags, so it survives import untouched.</p>
+
+        <h2>A major section heading</h2>
+        <p>Use <strong>strong</strong> for emphasis and <em>emphasis</em> for nuance. Inline <code>code</code> is fine too. Link out with normal <a href="https://careychou.tech">anchors</a>.</p>
+
+        <blockquote>Pull the single sentence you most want quoted into a blockquote. Medium renders these beautifully and readers screenshot them.</blockquote>
+
+        <h3>A sub-heading</h3>
+        <ul>
+          <li>Bulleted points import as native Medium lists.</li>
+          <li>Keep each item to one idea.</li>
+        </ul>
+
+        <figure>
+          <img src="/assets/placeholder-figure.svg" alt="Describe the figure precisely — this alt text matters for accessibility and Medium keeps it." />
+          <figcaption>Figure 1 — export interactive infographics as PNG/SVG for the image, and
+            <a href="/art/">link the caption to the live version</a>.</figcaption>
+        </figure>
+
+        <p>Close by returning to the opening scene, now resolved. One clear takeaway.</p>
+
+        <hr />
+        <p><em>Originally written at <a href="https://careychou.tech">careychou.tech</a>.</em></p>
+      </div>
+      <!-- ===== end Medium-portable body ===== -->
+    </article>
+
+    <aside class="note-box glass">
+      <strong>Publishing note (delete before importing):</strong> deploy this page, then use
+      Medium ▸ Write ▸ ⋯ ▸ <em>Import a story</em> and paste the URL for the highest-fidelity result.
+      See the comment at the top of this file for details.
+    </aside>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <a class="brand" href="/"><span class="mark" aria-hidden="true"></span> Carey Chou</a>
+      <nav class="socials" aria-label="Elsewhere">
+        <a href="https://medium.com/@carey.chou" target="_blank" rel="noopener">Medium ↗</a>
+        <a href="https://www.linkedin.com/in/careychou/" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
