@@ -317,3 +317,34 @@ footer.site a:hover { color: var(--ink); }
   html { scroll-behavior: auto; }
   .btn, .post, .art-tile { transition: none; }
 }
+
+/* ---------- Featured art piece (liquid glass + flow) ---------- */
+.art-feature {
+  grid-column: 1 / -1; position: relative; display: grid; gap: 0;
+  grid-template-columns: 1.05fr 1fr; align-items: stretch;
+  border-radius: var(--radius, 20px); overflow: hidden; text-decoration: none;
+  border: 1px solid var(--glass-brd, rgba(255,255,255,.14));
+  background: var(--glass-bg, rgba(255,255,255,.05));
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .45s ease;
+}
+.art-feature:hover { transform: translateY(-6px); box-shadow: 0 30px 70px -28px rgba(0,0,0,.6); }
+.art-feature .canvas {
+  position: relative; min-height: 300px;
+  background:
+    radial-gradient(60% 70% at 22% 26%, rgba(52,211,153,.85), transparent 62%),
+    radial-gradient(55% 65% at 78% 32%, rgba(251,146,60,.75), transparent 60%),
+    radial-gradient(70% 75% at 46% 88%, rgba(96,165,250,.8), transparent 64%),
+    radial-gradient(50% 60% at 88% 80%, rgba(192,132,252,.7), transparent 62%);
+  filter: blur(6px) saturate(150%);
+}
+.art-feature .canvas::after {
+  content: ""; position: absolute; inset: 0;
+  backdrop-filter: blur(14px) saturate(130%); -webkit-backdrop-filter: blur(14px) saturate(130%);
+  background: linear-gradient(140deg, rgba(255,255,255,.18), rgba(255,255,255,.02) 46%, rgba(255,255,255,.12));
+  border-right: 1px solid rgba(255,255,255,.16);
+}
+.art-feature .body { padding: 2rem 2.1rem; display: flex; flex-direction: column; gap: .75rem; justify-content: center; }
+.art-feature .body h3 { font-size: 1.5rem; line-height: 1.2; }
+.art-feature .body p { color: var(--ink-dim); font-size: .95rem; margin: 0; }
+@media (max-width: 760px) { .art-feature { grid-template-columns: 1fr; } .art-feature .canvas { min-height: 190px; } }
+@media (prefers-reduced-motion: reduce) { .art-feature { transition: none; } }

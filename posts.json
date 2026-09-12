@@ -1,6 +1,6 @@
 [
   {
-    "title": "Reasoning Twins: Codifying the Decision Nobody Wrote Down",
+    "title": "Codifying Implicit Decision Reasoning: The Tradeoffs Nobody Wrote Down",
     "slug": "reasoning-twins-codifying-the-decision-nobody-wrote-down",
     "date": "Sep 12, 2026",
     "dt": "2026-09-12T00:00:00",
@@ -12,7 +12,7 @@
     ],
     "href": "/writing/reasoning-twins-codifying-the-decision-nobody-wrote-down.html",
     "badge": "Interactive",
-    "excerpt": "Transcripts and memos capture what an expert did — not the tradeoff that decided it. Recovering that hidden decision function so an agent can reason in new situations instead of imitating old ones."
+    "excerpt": "Most codification captures the steps experts can write down. This recovers the layer underneath — the criteria, conditional weights and constraints that actually decide."
   },
   {
     "title": "How Do You Know an AI Answer Is Good Enough to Act On?",
