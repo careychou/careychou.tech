@@ -1,53 +1,618 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>From Digital Twin to Phygital Twin: Codifying Process Knowledge into Agentic Robotic Process… · Carey Chou</title>
-  <meta name="description" content="We’ve all seen LLM agents codify a person’s skills into a digital twin. But a lot of what makes work actually work isn’t a skill you can hand off — it’s tribal …" />
-  <meta name="theme-color" content="#05070f" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/site.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Digital Twin to Phygital Twin — Codifying Process Knowledge into Agentic Robotic Process Optimization</title>
+<style>
+  :root{
+    --heb:#e2231a; --heb-dark:#b51710; --ink:#1a1a1a; --muted:#5b6470;
+    --bg:#ffffff; --card:#ffffff; --line:#e4e7ec; --soft:#fff5f4;
+    --green:#1f9d57; --amber:#e8a317; --blue:#2563cc; --violet:#6d4bd6;
+    --shadow:0 1px 3px rgba(16,24,40,.06),0 8px 24px rgba(16,24,40,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  /* Hero */
+  header.hero{background:#ffffff;color:var(--ink);
+    padding:60px 0 76px;position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  header.hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(circle at 88% -20%,rgba(226,35,26,.10),transparent 46%)}
+  .hero .wrap{position:relative;z-index:1}
+  .badge{display:inline-flex;align-items:center;gap:8px;background:var(--soft);
+    border:1px solid #f3d3d1;color:var(--heb-dark);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:700;letter-spacing:.3px;margin-bottom:22px}
+  .badge .dot{width:8px;height:8px;border-radius:50%;background:var(--heb);box-shadow:0 0 0 4px rgba(226,35,26,.18)}
+  header h1{font-size:46px;line-height:1.08;margin:0 0 16px;font-weight:800;letter-spacing:-1px;max-width:18ch;color:var(--ink)}
+  header h1 .hl{color:var(--heb)}
+  header p.sub{font-size:19px;max-width:780px;margin:0 0 28px;color:var(--muted)}
+  header p.sub b{color:var(--ink)}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+  .pill{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 16px;font-size:14px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+  .pill b{color:var(--heb)}
+  .analogy{margin-top:30px;background:var(--soft);border:1px solid #f3d3d1;border-left:5px solid var(--heb);
+    border-radius:14px;padding:20px 22px;max-width:860px;display:flex;gap:16px;align-items:flex-start}
+  .analogy .big{font-size:32px;line-height:1;flex:none}
+  .analogy p{margin:0;font-size:15.5px;color:var(--ink)}.analogy b{color:var(--heb-dark)}
+
+  section{padding:60px 0}
+  section.alt{background:#fafbfc;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .eyebrow{color:var(--heb);font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;margin:0 0 10px}
+  h2.sec{font-size:32px;margin:0 0 14px;font-weight:800;letter-spacing:-.5px}
+  p.lead{font-size:18px;color:var(--muted);max-width:820px;margin:0 0 8px}
+
+  /* anatomy: known vs new */
+  .anatomy{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:40px}
+  @media(max-width:820px){.anatomy{grid-template-columns:1fr}}
+  .organ{border-radius:18px;padding:28px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .organ.known{background:linear-gradient(160deg,#eef4ff,#fff);border:1px solid #d6e2ff}
+  .organ.new{background:linear-gradient(160deg,#fff5f4,#fff);border:1px solid #f3d3d1}
+  .organ .hd{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+  .organ .hd .ic{font-size:38px;line-height:1}
+  .organ .hd .lbl{font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase}
+  .organ.known .hd .lbl{color:var(--blue)} .organ.new .hd .lbl{color:var(--heb)}
+  .organ .hd h3{margin:2px 0 0;font-size:22px;font-weight:800}
+  .organ>p{margin:0 0 16px;font-size:14.5px;color:var(--muted)}
+  .organ ul{margin:0;padding:0;list-style:none}
+  .organ li{padding:8px 0 8px 28px;position:relative;font-size:14px;border-top:1px solid rgba(0,0,0,.05)}
+  .organ li:first-of-type{border-top:none}
+  .organ.known li::before{content:"💻";position:absolute;left:0;font-size:13px}
+  .organ.new li::before{content:"🔭";position:absolute;left:0;font-size:13px}
+  .organ .have{display:inline-block;margin-top:16px;font-size:11.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;border-radius:999px;padding:5px 12px}
+  .organ.known .have{background:#eef4ff;color:var(--blue);border:1px solid #d6e2ff}
+  .organ.new .have{background:#fff5f4;color:var(--heb-dark);border:1px solid #f3d3d1}
+  .bodyline{margin-top:26px;display:flex;align-items:center;gap:18px;justify-content:center;flex-wrap:wrap;background:#0f1115;border-radius:16px;padding:22px 26px;color:#fff}
+  .bodyline .part{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700}
+  .bodyline .part .e{font-size:26px}.bodyline .plus{color:#7d8896;font-size:22px;font-weight:800}
+  .bodyline .eq{color:#7CFFB2;font-size:22px;font-weight:800}
+  .bodyline .result{font-size:16px;font-weight:800}.bodyline .result .hl{color:#ffd9d6}
+  .bodyline .b1{color:#9cc1ff}.bodyline .a1{color:#ff9b94}
+  @media(max-width:680px){.bodyline{flex-direction:column;gap:10px}}
+
+  /* pipeline */
+  .pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:40px;align-items:stretch}
+  .stage{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 18px;box-shadow:var(--shadow);position:relative;display:flex;flex-direction:column}
+  .stage .num{position:absolute;top:-14px;left:18px;width:30px;height:30px;border-radius:9px;background:var(--heb);color:#fff;font-weight:800;font-size:14px;display:grid;place-items:center;box-shadow:0 4px 10px rgba(226,35,26,.35)}
+  .stage .ico{font-size:30px;margin:6px 0 12px}
+  .stage h3{margin:0 0 8px;font-size:16px;font-weight:700}
+  .stage .plain{margin:0;font-size:13px;color:var(--ink);background:#f7f8fa;border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+  .stage .plain b{color:var(--heb-dark)}
+  .stage .exline{margin:8px 0 0;font-size:13px;color:var(--muted)}
+  .stage .exline .lab{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--heb);margin-right:6px}
+  .arrow{position:absolute;top:50%;right:-11px;transform:translateY(-50%);z-index:2;color:var(--heb);font-size:20px;font-weight:800}
+  @media(max-width:920px){.pipe{grid-template-columns:1fr}.arrow{display:none}}
+  .recap{margin-top:34px;background:#fff;border:1px solid var(--line);border-left:5px solid var(--heb);border-radius:12px;padding:20px 24px;box-shadow:var(--shadow)}
+  .recap b{color:var(--heb-dark)}.recap .em{background:var(--soft);border-radius:6px;padding:1px 7px;font-weight:600;color:var(--heb-dark)}
+
+  /* diagram canvas */
+  .canvas{margin-top:34px;border:1px solid var(--line);border-radius:16px;background:var(--card);padding:18px;box-shadow:var(--shadow);overflow-x:auto}
+  .cap{color:var(--muted);font-size:13.5px;margin-top:12px}
+  text{font-family:-apple-system,Segoe UI,Arial,sans-serif}
+  .ttl{fill:#1a1a1a;font-size:12.5px;font-weight:700}
+  .sub{fill:#5b6470;font-size:11px}
+  .tag{fill:#a5710a;font-size:10px;font-weight:800}
+  .lane-ttl{fill:#1a1a1a;font-size:13px;font-weight:800}
+  .lane-sub{fill:#5b6470;font-size:10.5px}
+  .stage-n{cursor:pointer}
+  .stage-n rect.body,.stage-n polygon.body{transition:filter .15s,stroke-width .15s}
+  .stage-n:hover rect.body,.stage-n:hover polygon.body{filter:drop-shadow(0 6px 14px rgba(37,99,204,.25));stroke-width:3}
+  .stage-n.active rect.body,.stage-n.active polygon.body{stroke-width:3.4}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
+  .lg{display:flex;align-items:center;gap:8px;font-size:13px;color:#45527a}
+  .sw{width:14px;height:14px;border-radius:4px;border:2px solid}
+  .detail{margin-top:14px;border:1px dashed #f0c3c0;background:var(--soft);border-radius:12px;padding:14px 16px;min-height:64px}
+  .detail h4{margin:0 0 4px;font-size:15px;color:var(--heb-dark)}.detail .meta{font-size:13px;color:#5b6470}
+  .detail .b{display:inline-block;font-size:11.5px;font-weight:800;color:var(--green);background:#eafaf0;border:1px solid #c7eed6;border-radius:999px;padding:3px 10px;margin-top:8px}
+
+  /* story timeline */
+  .story{margin-top:38px;position:relative;padding-left:8px}
+  .step{display:grid;grid-template-columns:54px 1fr;gap:18px;position:relative;padding-bottom:26px}
+  .step:not(:last-child)::before{content:"";position:absolute;left:26px;top:48px;bottom:-6px;width:2px;background:linear-gradient(var(--heb),#f0c3c0)}
+  .step .av{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:24px;flex:none;z-index:1;box-shadow:var(--shadow)}
+  .step .av.p1{background:#eef4ff;border:1px solid #d6e2ff}
+  .step .av.p2{background:#f1edff;border:1px solid #ddd2ff}
+  .step .av.p3{background:#fff5f4;border:1px solid #f3d3d1}
+  .step .av.p4{background:#eafaf0;border:1px solid #c7eed6}
+  .step .bd{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow)}
+  .step .bd .who{font-size:11.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin:0 0 6px;color:var(--heb)}
+  .step .bd h4{margin:0 0 6px;font-size:17px}.step .bd p{margin:0;font-size:14px;color:var(--muted)}
+  .step .bd .said{margin-top:10px;font-style:italic;font-size:14px;color:var(--ink);background:#f7f8fa;border-radius:8px;padding:8px 12px;border-left:3px solid var(--line)}
+  .step .bd .ev{margin-top:10px;font-size:11.5px;font-weight:800;color:var(--blue);background:#eef4ff;border:1px solid #d6e2ff;border-radius:999px;padding:3px 10px;display:inline-block;font-family:ui-monospace,Menlo,monospace}
+
+  /* loop cards */
+  .loop{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:34px}
+  .loopcard{border-radius:14px;padding:22px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow)}
+  .loopcard.read{border-top:4px solid var(--blue)}.loopcard.decide{border-top:4px solid var(--heb)}.loopcard.act{border-top:4px solid var(--green)}
+  .loopcard h4{margin:0 0 6px;font-size:16px}.loopcard p{margin:0;font-size:13.5px;color:var(--muted)}
+  @media(max-width:760px){.loop{grid-template-columns:1fr}}
+
+  /* event table */
+  table{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:30px;font-size:13.5px;box-shadow:var(--shadow);background:#fff}
+  th,td{border-bottom:1px solid #eef2f6;text-align:left;vertical-align:top;padding:10px 12px}
+  th{background:#f7f8fa;color:#1f2e4d;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+  tbody tr:hover{background:#fafbfc}tr:last-child td{border-bottom:0}
+  td.mono,th.mono{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+  .chip-app{display:inline-block;font-size:11.5px;font-weight:700;color:#1f4fb0;background:#eef4ff;border:1px solid #d6e2ff;border-radius:6px;padding:2px 8px}
+  .rolehead td{background:#fff5f4;font-weight:800;color:var(--heb-dark);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+
+  footer{background:#0f1115;color:#aeb6c0;padding:40px 0;font-size:13px;text-align:center}
+  footer b{color:#fff}
+</style>
 </head>
 <body>
-  <a class="skip" href="#main">Skip to content</a>
-  <div class="flow-field" aria-hidden="true">
-    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span>
+
+<!-- SOCIAL COVER -->
+<div style="max-width:1180px;margin:0 auto;padding:24px 24px 0">
+  <img src="rpm-cover.png" alt="From a Code Assistant to Robotic Process Optimization — the same AI that drives your browser can observe, remember, and optimize how work really flows" style="width:100%;height:auto;border-radius:18px;box-shadow:0 1px 3px rgba(16,24,40,.06),0 12px 32px rgba(16,24,40,.12);display:block">
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="badge"><span class="dot"></span> FROM DIGITAL TWIN TO PHYGITAL TWIN</div>
+    <h1>From a <span class="hl">Digital Twin</span> to a <span class="hl">Phygital Twin</span>.</h1>
+    <p class="sub" style="font-size:17px;font-weight:600;color:var(--ink);max-width:820px;margin:0 0 18px">How to codify process knowledge with a <b>Code Assistant</b> into <b>Agentic Robotic Process Optimization</b> &mdash; observe the real work in the browser, reason about it on the spot, then replay, simulate, and optimize it.</p>
+    <p class="sub">A <b>digital twin</b> models a system from clean, structured data. But most real work doesn't live in clean
+    data &mdash; it lives in how people move across real apps, screens, and spreadsheets, full of judgment no system ever logged.
+    A <b>phygital twin</b> is stitched from exactly that: a Code Assistant quietly <b>observes the actual work</b>, reasons about
+    what's on the screen, remembers every decision in one place, and turns it into something you can <b>replay, simulate, and optimize</b>.</p>
+    <div class="hero-cta">
+      <span class="pill">👀 <b>Observe</b> &nbsp;real work across apps</span>
+      <span class="pill">🧠 <b>Remember</b> &nbsp;every decision in one memory</span>
+      <span class="pill">⚙️ <b>Optimize</b> &nbsp;the whole process, not one task</span>
+    </div>
+    <div class="analogy">
+      <div class="big">🎥</div>
+      <p>The way I picture it: a <b>flight recorder</b> for knowledge work. Each observer notes what someone did,
+      in which app, what the screen was showing, and why. Stitch those recordings together and you finally get to <b>see the whole decision journey</b> —
+      and once you can measure it, you can improve it like any other system.</p>
+    </div>
   </div>
-  <nav class="nav" aria-label="Primary">
-    <div class="wrap">
-      <a class="brand" href="/"><span class="mark" aria-hidden="true"></span> Carey&nbsp;Chou</a>
-      <div class="nav-links">
-        <a href="/writing/" class="hide-sm">Writing</a>
-        <a href="/art/" class="hide-sm">Art</a>
-        <a href="/">← Home</a>
+</header>
+
+<!-- INTRO: RPA/RPM landscape -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">First, where this fits</p>
+    <h2 class="sec">Before you can optimize a process, you have to <span style="color:var(--heb)">discover</span> it.</h2>
+    <p class="lead">If you've spent any time around enterprise automation, you already know the big names — <strong>UiPath</strong>,
+    <strong>Automation Anywhere</strong>, <strong>Blue Prism</strong> on the RPA side, and <strong>Celonis</strong> on the
+    process-mining side. They're genuinely powerful, and I'm not here to knock them.</p>
+
+    <p>But here's the thing I keep running into. RPA is brilliant once you already know the steps — you hand it a defined
+    procedure and it runs it tirelessly. Process mining is brilliant once your work already lives in clean system logs —
+    it reads an ERP's event table and reconstructs the flow. Both of them quietly assume the hard part is already done:
+    that somebody, somewhere, has written the process down.</p>
+
+    <p>In most companies, nobody has. The real workflow doesn't live in one tidy system — it's scattered across a dozen
+    web apps, a pile of spreadsheets, a thread of emails, and a ton of <em>tribal knowledge</em> that only exists in
+    people's heads. The analyst who knows to re-check margin before pricing goes out. The planner who always pings product
+    when a supplier slips. None of that is documented anywhere. There is no process map — and you can't mine logs for a
+    process that was never logged in the first place.</p>
+
+    <p>So before optimization, simulation, or any of the fun stuff, there's an unglamorous first step almost everyone skips:
+    <strong>discovery</strong>. You have to surface what the process actually <em>is</em> — bottom-up, from how work really
+    happens — instead of pretending a top-down diagram already exists.</p>
+
+    <div class="bodyline">
+      <span class="part"><span class="e">🔍</span><span class="b1">Discover</span></span><span class="plus">→</span>
+      <span class="part"><span class="e">⚙️</span><span class="a1">Optimize</span></span><span class="eq">·</span>
+      <span class="result">you can't optimize <span class="hl">what you can't see</span></span>
+    </div>
+
+    <p style="margin-top:28px">That discovery step is exactly where the big platforms get expensive and heavy — long
+    deployments, connectors, six-figure licenses. And that's the gap I want to talk about. Because the browser the whole
+    company already works in turns out to be the perfect place to watch real work unfold &mdash; which means we can now build
+    a <strong>much lower-cost, custom alternative</strong> that discovers the process bottom-up, then opens the door to
+    optimizing it. That's what the rest of this post is about.</p>
+  </div>
+</section>
+
+<!-- KNOWN vs NEW -->
+<section class="alt">
+  <div class="wrap">
+    <p class="eyebrow">How I think about it</p>
+    <h2 class="sec">We already automate tasks. What I really want is to <span style="color:var(--heb)">mine the process</span>.</h2>
+    <p class="lead">Driving Chrome through the DevTools Protocol — CDP, the browser-control interface, <em>not</em> a customer data
+    platform — to click and type is old news at this point. What I think we've
+    been missing is a cheap way to turn that exact same capability into real process intelligence. It's a small change to
+    build — but it completely changes what the AI is <em>for</em>.</p>
+
+    <div class="anatomy">
+      <div class="organ known">
+        <div class="hd"><div class="ic">💻</div><div><div class="lbl">The part everyone already accepts</div><h3>AI + Chrome DevTools Protocol automates a task</h3></div></div>
+        <p>One assistant hops into a live, signed-in browser and finishes a single job, start to finish.</p>
+        <ul>
+          <li>Opens the same screens and forms a person uses</li>
+          <li>Types values, clicks buttons, submits the work</li>
+          <li>All about getting one task “done”</li>
+        </ul>
+        <span class="have">Familiar today</span>
+      </div>
+      <div class="organ new">
+        <div class="hd"><div class="ic">🔭</div><div><div class="lbl">The low-cost extension I'm excited about</div><h3>AI + Chrome DevTools Protocol mines the process</h3></div></div>
+        <p>A bunch of assistants quietly watch instead. Every time someone makes a real decision, the assistant <em>reads the screen</em>,
+        reasons about what it means, and drops a record into one shared memory &mdash; not just the click, but the context and the why.</p>
+        <ul>
+          <li>Logs three layers: the event, the on-screen context, and a short reason</li>
+          <li>Stitches those records into a cross-persona journey</li>
+          <li>All about making the whole process <em>better</em></li>
+        </ul>
+        <span class="have">New: Agentic Robotic Process Optimization</span>
       </div>
     </div>
-  </nav>
-  <main id="main">
-    <article class="article wrap">
-      <header>
-        <p class="eyebrow">Jun 27, 2026</p>
-        <h1>From Digital Twin to Phygital Twin: Codifying Process Knowledge into Agentic Robotic Process…</h1>
-        <p class="byline"><span>Carey Chou</span> · <span>Jun 27, 2026</span> · <span>6 min read</span></p>
-      </header>
-      <div class="article-body">
-        <h3>From Digital Twin to Phygital Twin: Codifying Process Knowledge into Agentic Robotic Process Optimization</h3><figure><img alt="" src="/writing/img/from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process/01.png" /></figure><p>We’ve all seen LLM agents codify a person’s skills into a digital twin. But a lot of what makes work actually work isn’t a skill you can hand off — it’s tribal knowledge baked into the process: the order people do things, the checks they never skip, the judgment calls that live across real apps, screens, and spreadsheets and never landed in any clean dataset. A<strong> phygital twin</strong> is stitched from exactly that. This post lays out a simple way to build one: put a Code Assistant to work quietly watching the real work, reasoning about what’s on the screen, remembering every decision in one shared place, and making the whole thing replayable, simulatable, and optimizable — <strong>Agentic Robotic Process Optimization (ARPO) </strong>— a low-cost way to capture the process knowledge that today only lives in people’s heads.</p><figure><img alt="" src="/writing/img/from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process/02.png" /></figure><h3>Before you can optimize a process, you have to discover it.</h3><p>If you’ve spent any time around enterprise automation, you already know the big names — <strong>UiPath</strong>, <strong>Automation Anywhere</strong>, and <strong>Blue Prism</strong> on the RPA side, and <strong>Celonis</strong> on the process-mining side. They’re genuinely powerful, and expensive.</p><p>But here’s the thing I keep running into. RPA is brilliant once you already know the steps — you hand it a defined procedure and it runs it tirelessly. Process mining is brilliant once your work already lives in clean system logs — it reads an ERP’s event table and reconstructs the flow. Both of them quietly assume the hard part is already done: that somebody, somewhere, has written the process down.</p><p>In most companies, the real workflow doesn’t live in one tidy system. It’s scattered across a dozen web apps, a pile of spreadsheets, a thread of emails, and a ton of <em>tribal knowledge</em> that only exists in people’s heads. The analyst who knows to re-check margin before pricing goes out. The planner who always pings product when a supplier slips. None of that is documented anywhere. There is no process map and you can’t mine logs for a process that was never logged in the first place, or it was logged but without context.</p><p>So before optimization, simulation, or any of the fun stuff, there’s an unglamorous first step almost everyone skips: <strong>discovery</strong>. You have to surface what the process actually <em>is</em> — bottom-up, from how work really happens — instead of pretending a top-down diagram already exists.</p><figure><img alt="" src="/writing/img/from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process/03.png" /></figure><p>That discovery step is exactly where the big platforms get expensive and heavy — long deployments, connectors, six-figure licenses. And that’s the gap I want to talk about. Because the browser the whole company already works in turns out to be the perfect place to watch real work unfold — which means we can now build a <strong>much lower-cost, custom alternative</strong> that discovers the process bottom-up, then opens the door to optimizing it. That’s what the rest of this post is about.</p><h3>We already automate tasks. What I really want is to mine the process from the web-based applications</h3><p>Driving Chrome through the DevTools Protocol — CDP, the browser-control interface, <em>not</em> a customer data platform — to click and type is old news at this point. Here’s the part I think we’ve been missing: that same observer can also <strong>read the UI/UX and reason about it on the spot</strong>. So instead of logging bare clicks like classic RPA, it captures three layers — the <strong>event</strong>, the on-screen <strong>context</strong>, and a short <strong>reason</strong> — and turns the whole thing into real process intelligence. Small change to build; completely changes what the AI is <em>for</em>.</p><figure><img alt="" src="/writing/img/from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process/04.png" /></figure><h3>How it actually works, start to finish</h3><p>These five steps work for basically any process: observe and read the screen, capture the event with its context and reasoning, store it centrally, re-sequence the journey, then simulate and optimize. To keep it concrete, I’ll run one example all the way through — a company deciding whether to launch a new product. The key difference from classic RPA: every captured record holds <strong>event + context + reasoning</strong>, not just a trail of clicks — which is what makes the process understandable later.</p><figure><img alt="" src="/writing/img/from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process/05.png" /></figure><h3>A few observers, one shared event and reasoning memory</h3><p>Nothing gets ripped out or replaced — the observers just ride on top of the apps people already use. Each one streams a standard decision event into a single shared memory, timestamped and linked by user, app, and business object. Once all the events live in one place, three things open up: replay what happened, simulate what-if paths, and optimize to take friction out.</p><figure><img alt="" src="/writing/img/from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process/06.png" /></figure><h3>Four roles, lots of steps, even more events</h3><p>Real decisions branch, run in parallel, and loop back — they’re almost never a clean straight line. Each persona gets a lane with a few real steps, and every step becomes its own event. The map below is the New Product Launch journey across four roles, with decision branches, a margin gate, and two rework loops. In the live HTML every step is interactive; here it’s captured as a static snapshot.</p><figure><img alt="" src="/writing/img/from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process/07.png" /></figure><h3>One product launch decision, across multiple roles over multiple days</h3><p>Here’s that same launch decision in plain language — and the event each moment quietly writes to memory. Nobody changed how they work; the observers just remembered. It runs from the Market Analyst on Mar 3 through a pricing re-model, a supplier-driven two-week slip, finance sign-off, and the exec’s green light on Mar 12 — about nine business days end to end.</p><figure><img alt="" src="/writing/img/from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process/08.png" /></figure><h3>What actually lands in the database — events, context &amp; reasoning</h3><p>This is the part that makes it more than logging. Each row doesn’t just record <em>what</em> happened — it also stores the <strong>on-screen context</strong> the decision was made in and a short <strong>reason</strong> the assistant inferred on the spot. Multiple rows per role, all sharing one business_object_id, are what rebuild the whole launch journey.</p><figure><img alt="" src="/writing/img/from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process/09.png" /></figure><h3>Why I think this is optimization, not just mining</h3><p>Once the journey is just data, the AI can answer questions no single app ever could — and then actually do something about them. <strong>Replay</strong> walks back through exactly how one launch decision moved across roles and apps. <strong>Simulate</strong> tries what-ifs against the real history — “if supply review started earlier, how many of these two-week slips just go away?” <strong>Optimize</strong> suggests concrete moves: reorder steps, pre-fetch the evidence, or flag the role that keeps triggering rework.</p><figure><img alt="" src="/writing/img/from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process/10.png" /></figure><p><strong>Bottom line for me</strong></p><p>AI + CDP is already familiar territory. Pushing it into an <strong>event + context + reasoning</strong> memory is a practical, low-cost way to build a <strong>phygital twin</strong> of how decisions really flow — observe, reason, replay, simulate, and optimize — long before anyone signs up for a heavyweight transformation platform.</p>
-      </div>
-      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.12);margin:3rem 0 1.5rem" />
-      <p style="margin-bottom:2rem"><a class="btn btn-ghost" href="/writing/">← All writing</a></p>
-    </article>
-  </main>
-  <footer class="site">
-    <div class="wrap">
-      <a class="brand" href="/"><span class="mark" aria-hidden="true"></span> Carey Chou</a>
-      <nav class="socials" aria-label="Elsewhere">
-        <a href="https://www.linkedin.com/in/careychou/" target="_blank" rel="noopener">LinkedIn ↗</a>
-      </nav>
+
+    <div class="bodyline">
+      <span class="part"><span class="e">👀</span><span class="b1">Observe</span></span><span class="plus">+</span>
+      <span class="part"><span class="e">🧠</span><span class="a1">Remember</span></span><span class="eq">=</span>
+      <span class="result">a system you can <span class="hl">replay · simulate · optimize</span></span>
     </div>
-  </footer>
-  <script src="/assets/site.js" defer></script>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">How it works</p>
+    <h2 class="sec">How it actually works, start to finish</h2>
+    <p class="lead">These five steps work for basically any process. To keep it concrete, I'll run one example all the way
+    through — <em>a company deciding whether to launch a new product.</em></p>
+
+    <div class="loop">
+      <div class="loopcard read"><h4>1 · Event</h4><p>What happened &mdash; the action taken and the decision made, in a clean record.</p></div>
+      <div class="loopcard decide"><h4>2 · Context</h4><p>What the UI/UX was actually showing at that moment &mdash; the numbers, flags, and screen the person was looking at.</p></div>
+      <div class="loopcard act"><h4>3 · Reasoning</h4><p>A short <em>why</em>, inferred on the spot &mdash; the assistant's read of what the context meant for the decision.</p></div>
+    </div>
+    <div class="recap"><b>Why this isn't classic RPA:</b> traditional RPA and process mining log only step 1 &mdash; the bare event. The difference
+    here is steps 2 and 3. Because the observer can <span class="em">read the screen and reason in the moment</span>, the memory holds
+    <b>event + context + reasoning</b>, not just a trail of clicks. That's what makes the captured process actually <em>understandable</em> later.</div>
+
+    <div class="pipe">
+      <div class="stage"><span class="num">1</span><div class="ico">👁️</div><h3>Observe &amp; read the screen</h3>
+        <p class="plain"><b>In plain terms:</b> the observers ride along inside the apps people already use &mdash; reading the screen, the data on it, and what the person is doing, not just logging clicks.</p>
+        <p class="exline"><span class="lab">Our example</span>An analyst reviews a demand chart; the observer sees the +18% trend on screen.</p>
+        <div class="arrow">➜</div></div>
+      <div class="stage"><span class="num">2</span><div class="ico">🧾</div><h3>Capture event, context &amp; reasoning</h3>
+        <p class="plain"><b>In plain terms:</b> each meaningful action becomes one record with three layers &mdash; the event, the on-screen context it happened in, and a short reason the assistant infers on the spot.</p>
+        <p class="exline"><span class="lab">Our example</span>“Recommended $199 &mdash; rival at $179, but the 35% margin target is met at higher volume.”</p>
+        <div class="arrow">➜</div></div>
+      <div class="stage"><span class="num">3</span><div class="ico">🗄️</div><h3>Store it centrally</h3>
+        <p class="plain"><b>In plain terms:</b> every observer streams into one shared memory, all timestamped and linked.</p>
+        <p class="exline"><span class="lab">Our example</span>Market, product, pricing, supply and finance events land together.</p>
+        <div class="arrow">➜</div></div>
+      <div class="stage"><span class="num">4</span><div class="ico">🧵</div><h3>Re-sequence the journey</h3>
+        <p class="plain"><b>In plain terms:</b> the events get reconnected by the thing they're about, and the real branching path shows up.</p>
+        <p class="exline"><span class="lab">Our example</span>One launch decision, stitched across four core roles over nine business days.</p>
+        <div class="arrow">➜</div></div>
+      <div class="stage"><span class="num">5</span><div class="ico">⚙️</div><h3>Simulate &amp; optimize</h3>
+        <p class="plain"><b>In plain terms:</b> replay what happened, try what-ifs, and point out where to take friction out.</p>
+        <p class="exline"><span class="lab">Our example</span>“Supply review is your most common stall — start it earlier.”</p></div>
+    </div>
+
+    <div class="recap"><b>Here's the part I like:</b> you don't reorganize anything up front. The browser just
+    <span class="em">remembers what already happens</span>, and that recorded past turns into a
+    <span class="em">simulator for a better future</span>.</div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="alt">
+  <div class="wrap">
+    <p class="eyebrow">The architecture, illustrated</p>
+    <h2 class="sec">A few AI observers, one shared decision memory</h2>
+    <p class="lead">Nothing gets ripped out or replaced — the observers just ride on top of the apps people already use. Once all
+    the events live in one place, three things open up: replay, simulation, and optimization.</p>
+    <div class="canvas">
+      <svg viewBox="0 0 1160 420" width="100%" role="img" aria-label="Architecture: AI observers feeding one shared memory, three engines">
+        <defs>
+          <marker id="aH" markerWidth="11" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L11,4 L0,8 Z" fill="#c9d2e0"/></marker>
+          <marker id="aG" markerWidth="11" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L11,4 L0,8 Z" fill="#bfe6cf"/></marker>
+          <linearGradient id="mem" x1="0" x2="1"><stop offset="0" stop-color="#fff1f0"/><stop offset="1" stop-color="#ffe7e5"/></linearGradient>
+          <linearGradient id="eng" x1="0" x2="1"><stop offset="0" stop-color="#eafaf0"/><stop offset="1" stop-color="#e1f6ea"/></linearGradient>
+        </defs>
+
+        <!-- column headers -->
+        <text x="162" y="30" text-anchor="middle" style="fill:#2563cc;font-size:12px;font-weight:800;letter-spacing:1.5px">AI OBSERVERS</text>
+        <text x="630" y="30" text-anchor="middle" style="fill:#e2231a;font-size:12px;font-weight:800;letter-spacing:1.5px">SHARED DECISION MEMORY</text>
+        <text x="1040" y="30" text-anchor="middle" style="fill:#1f9d57;font-size:12px;font-weight:800;letter-spacing:1.5px">INTELLIGENCE ENGINES</text>
+
+        <!-- observer → memory connectors -->
+        <path d="M290,97  C380,97  385,185 452,188" fill="none" stroke="#c9d2e0" stroke-width="2.5" marker-end="url(#aH)"/>
+        <path d="M290,183 C375,183 395,213 452,216" fill="none" stroke="#c9d2e0" stroke-width="2.5" marker-end="url(#aH)"/>
+        <path d="M290,269 C375,269 395,247 452,244" fill="none" stroke="#c9d2e0" stroke-width="2.5" marker-end="url(#aH)"/>
+        <path d="M290,355 C380,355 385,275 452,272" fill="none" stroke="#c9d2e0" stroke-width="2.5" marker-end="url(#aH)"/>
+
+        <!-- memory → engine connectors -->
+        <path d="M808,205 C875,185 880,128 938,124" fill="none" stroke="#bfe6cf" stroke-width="2.5" marker-end="url(#aG)"/>
+        <path d="M808,235 C875,235 880,236 938,236" fill="none" stroke="#bfe6cf" stroke-width="2.5" marker-end="url(#aG)"/>
+        <path d="M808,265 C875,285 880,344 938,348" fill="none" stroke="#bfe6cf" stroke-width="2.5" marker-end="url(#aG)"/>
+
+        <!-- observer chips -->
+        <g>
+          <rect x="36" y="64" width="254" height="66" rx="16" fill="#fff" stroke="#d6e2ff" stroke-width="2"/>
+          <circle cx="76" cy="97" r="22" fill="#eef4ff" stroke="#2563cc" stroke-width="2"/><text x="76" y="104" text-anchor="middle" font-size="19">🔭</text>
+          <text class="ttl" x="112" y="93" font-size="14">Market Analyst</text><text class="sub" x="112" y="111">BI · Research Portal</text>
+        </g>
+        <g>
+          <rect x="36" y="150" width="254" height="66" rx="16" fill="#fff" stroke="#d6e2ff" stroke-width="2"/>
+          <circle cx="76" cy="183" r="22" fill="#eef4ff" stroke="#2563cc" stroke-width="2"/><text x="76" y="190" text-anchor="middle" font-size="19">🔭</text>
+          <text class="ttl" x="112" y="179" font-size="14">Product Manager</text><text class="sub" x="112" y="197">PLM · Requirements</text>
+        </g>
+        <g>
+          <rect x="36" y="236" width="254" height="66" rx="16" fill="#fff" stroke="#d6e2ff" stroke-width="2"/>
+          <circle cx="76" cy="269" r="22" fill="#eef4ff" stroke="#2563cc" stroke-width="2"/><text x="76" y="276" text-anchor="middle" font-size="19">🔭</text>
+          <text class="ttl" x="112" y="265" font-size="14">Commercial Analyst</text><text class="sub" x="112" y="283">Pricing · Fin. Model</text>
+        </g>
+        <g>
+          <rect x="36" y="322" width="254" height="66" rx="16" fill="#fff" stroke="#d6e2ff" stroke-width="2"/>
+          <circle cx="76" cy="355" r="22" fill="#eef4ff" stroke="#2563cc" stroke-width="2"/><text x="76" y="362" text-anchor="middle" font-size="19">🔭</text>
+          <text class="ttl" x="112" y="351" font-size="14">Supply &amp; Finance</text><text class="sub" x="112" y="369">ERP · Budget · Approval</text>
+        </g>
+
+        <!-- central memory -->
+        <rect x="452" y="150" width="356" height="170" rx="22" fill="url(#mem)" stroke="#e2231a" stroke-width="2.5"/>
+        <text x="630" y="194" text-anchor="middle" font-size="26">🧠</text>
+        <text class="ttl" x="630" y="226" text-anchor="middle" font-size="15.5">Central Decision Memory</text>
+        <text class="sub" x="630" y="250" text-anchor="middle" font-size="12">One timestamped event stream</text>
+        <text class="sub" x="630" y="271" text-anchor="middle" font-size="12">Linked by user, app &amp; business object</text>
+        <text class="sub" x="630" y="292" text-anchor="middle" font-size="12">Re-sequenced into decision journeys</text>
+
+        <!-- engines -->
+        <g>
+          <rect x="938" y="81" width="204" height="86" rx="16" fill="url(#eng)" stroke="#1f9d57" stroke-width="2.5"/>
+          <circle cx="982" cy="124" r="21" fill="#fff" stroke="#1f9d57" stroke-width="1.5"/><text x="982" y="131" text-anchor="middle" font-size="19">🔁</text>
+          <text class="ttl" x="1080" y="119" text-anchor="middle" font-size="14.5">Replay</text><text class="sub" x="1080" y="139" text-anchor="middle">what happened</text>
+        </g>
+        <g>
+          <rect x="938" y="193" width="204" height="86" rx="16" fill="url(#eng)" stroke="#1f9d57" stroke-width="2.5"/>
+          <circle cx="982" cy="236" r="21" fill="#fff" stroke="#1f9d57" stroke-width="1.5"/><text x="982" y="243" text-anchor="middle" font-size="19">🧪</text>
+          <text class="ttl" x="1080" y="231" text-anchor="middle" font-size="14.5">Simulate</text><text class="sub" x="1080" y="251" text-anchor="middle">what-if paths</text>
+        </g>
+        <g>
+          <rect x="938" y="305" width="204" height="86" rx="16" fill="url(#eng)" stroke="#1f9d57" stroke-width="2.5"/>
+          <circle cx="982" cy="348" r="21" fill="#fff" stroke="#1f9d57" stroke-width="1.5"/><text x="982" y="355" text-anchor="middle" font-size="19">⚙️</text>
+          <text class="ttl" x="1080" y="343" text-anchor="middle" font-size="14.5">Optimize</text><text class="sub" x="1080" y="363" text-anchor="middle">remove friction</text>
+        </g>
+      </svg>
+    </div>
+    <p class="cap">Four observers on the left, one shared memory in the middle, three intelligence engines on the right.</p>
+  </div>
+</section>
+
+<!-- INTERACTIVE SWIMLANE MAP -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The real journey · interactive</p>
+    <h2 class="sec">Four roles, lots of steps, even more events</h2>
+    <p class="lead">Real decisions branch, run in parallel, and loop back — they're almost never a clean straight line. Each
+    persona gets a lane with a few real steps, and every step becomes its own event. <strong>Tap or hover any step</strong>
+    to see the role, the app, and the event it drops into memory.</p>
+
+    <div class="canvas">
+      <svg id="pmap" viewBox="0 0 1160 600" width="100%" role="img" aria-label="Swimlane process map with four personas">
+        <defs>
+          <marker id="fwd" markerWidth="11" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L11,4 L0,8 Z" fill="#2563cc"/></marker>
+          <marker id="lp" markerWidth="11" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L11,4 L0,8 Z" fill="#e8a317"/></marker>
+        </defs>
+        <rect x="8" y="22"  width="1144" height="128" rx="14" fill="#fbfcff" stroke="#eef0f4"/>
+        <rect x="8" y="158" width="1144" height="128" rx="14" fill="#f9fafc" stroke="#eef0f4"/>
+        <rect x="8" y="294" width="1144" height="128" rx="14" fill="#fbfcff" stroke="#eef0f4"/>
+        <rect x="8" y="430" width="1144" height="150" rx="14" fill="#f9fafc" stroke="#eef0f4"/>
+        <text class="lane-ttl" x="26" y="78">🔎 Market Analyst</text><text class="lane-sub" x="26" y="96">BI · Research Portal</text>
+        <text class="lane-ttl" x="26" y="214">📦 Product Manager</text><text class="lane-sub" x="26" y="232">PLM · Requirements</text>
+        <text class="lane-ttl" x="26" y="350">💲 Commercial Analyst</text><text class="lane-sub" x="26" y="368">Pricing · Fin. Model</text>
+        <text class="lane-ttl" x="26" y="500">🏭 Supply &amp; Finance</text><text class="lane-sub" x="26" y="518">ERP · Budget · Approval</text>
+
+        <!-- LANE 1 cy86 -->
+        <path d="M310,86 L330,86" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <path d="M470,86 L490,86" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <path d="M630,86 L678,86" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <g class="stage-n" tabindex="0" data-key="l1s1"><rect class="body" x="170" y="60" width="140" height="52" rx="11" fill="#fff" stroke="#2563cc" stroke-width="2.2"/><text class="ttl" x="240" y="84" text-anchor="middle">Scan signals</text><text class="sub" x="240" y="100" text-anchor="middle">Research Portal</text></g>
+        <g class="stage-n" tabindex="0" data-key="l1s2"><rect class="body" x="330" y="60" width="140" height="52" rx="11" fill="#fff" stroke="#2563cc" stroke-width="2.2"/><text class="ttl" x="400" y="84" text-anchor="middle">Analyze demand</text><text class="sub" x="400" y="100" text-anchor="middle">BI Dashboard</text></g>
+        <g class="stage-n" tabindex="0" data-key="l1s3"><rect class="body" x="490" y="60" width="140" height="52" rx="11" fill="#fff" stroke="#2563cc" stroke-width="2.2"/><text class="ttl" x="560" y="84" text-anchor="middle">Compare rivals</text><text class="sub" x="560" y="100" text-anchor="middle">Excel</text></g>
+        <g class="stage-n" tabindex="0" data-key="l1d"><polygon class="body" points="712,54 748,86 712,118 676,86" fill="#fff5f4" stroke="#e2231a" stroke-width="2.2"/><text class="sub" x="712" y="90" text-anchor="middle">strong?</text></g>
+        <path d="M712,54 C600,28 360,28 240,58" stroke="#e8a317" stroke-width="2" stroke-dasharray="7 6" fill="none" marker-end="url(#lp)"/>
+        <text class="tag" x="455" y="40" text-anchor="middle">no → re-research</text>
+        <path d="M712,118 C712,150 320,150 250,170" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <text class="tag" x="545" y="146" fill="#1f9d57">yes → handoff</text>
+
+        <!-- LANE 2 cy222 -->
+        <path d="M310,222 L330,222" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <path d="M470,222 L490,222" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <path d="M630,222 L678,222" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <g class="stage-n" tabindex="0" data-key="l2s1"><rect class="body" x="170" y="196" width="140" height="52" rx="11" fill="#fff" stroke="#2563cc" stroke-width="2.2"/><text class="ttl" x="240" y="220" text-anchor="middle">Draft concept</text><text class="sub" x="240" y="236" text-anchor="middle">PLM</text></g>
+        <g class="stage-n" tabindex="0" data-key="l2s2"><rect class="body" x="330" y="196" width="140" height="52" rx="11" fill="#fff" stroke="#2563cc" stroke-width="2.2"/><text class="ttl" x="400" y="220" text-anchor="middle">Prioritize reqs</text><text class="sub" x="400" y="236" text-anchor="middle">Requirements</text></g>
+        <g class="stage-n" tabindex="0" data-key="l2s3"><rect class="body" x="490" y="196" width="140" height="52" rx="11" fill="#fff" stroke="#2563cc" stroke-width="2.2"/><text class="ttl" x="560" y="220" text-anchor="middle">Validate scope</text><text class="sub" x="560" y="236" text-anchor="middle">Collaboration</text></g>
+        <g class="stage-n" tabindex="0" data-key="l2d"><polygon class="body" points="712,190 748,222 712,254 676,222" fill="#fff5f4" stroke="#e2231a" stroke-width="2.2"/><text class="sub" x="712" y="226" text-anchor="middle">ready?</text></g>
+        <path d="M712,190 C600,166 360,166 240,194" stroke="#e8a317" stroke-width="2" stroke-dasharray="7 6" fill="none" marker-end="url(#lp)"/>
+        <text class="tag" x="455" y="178" text-anchor="middle">no → refine concept</text>
+        <path d="M712,254 C712,282 320,286 250,306" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <text class="tag" x="545" y="282" fill="#1f9d57">yes → handoff</text>
+
+        <!-- LANE 3 cy358 -->
+        <path d="M310,358 L330,358" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <path d="M470,358 L490,358" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <path d="M630,358 L678,358" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <g class="stage-n" tabindex="0" data-key="l3s1"><rect class="body" x="170" y="332" width="140" height="52" rx="11" fill="#fff" stroke="#2563cc" stroke-width="2.2"/><text class="ttl" x="240" y="356" text-anchor="middle">Estimate demand</text><text class="sub" x="240" y="372" text-anchor="middle">Financial Model</text></g>
+        <g class="stage-n" tabindex="0" data-key="l3s2"><rect class="body" x="330" y="332" width="140" height="52" rx="11" fill="#fff" stroke="#2563cc" stroke-width="2.2"/><text class="ttl" x="400" y="356" text-anchor="middle">Model pricing</text><text class="sub" x="400" y="372" text-anchor="middle">Pricing Platform</text></g>
+        <g class="stage-n" tabindex="0" data-key="l3s3"><rect class="body" x="490" y="332" width="140" height="52" rx="11" fill="#fff" stroke="#2563cc" stroke-width="2.2"/><text class="ttl" x="560" y="356" text-anchor="middle">Estimate margin</text><text class="sub" x="560" y="372" text-anchor="middle">Excel</text></g>
+        <g class="stage-n" tabindex="0" data-key="l3d"><polygon class="body" points="712,326 748,358 712,390 676,358" fill="#fffaf0" stroke="#e8a317" stroke-width="2.2"/><text class="sub" x="712" y="362" text-anchor="middle">margin?</text></g>
+        <path d="M712,326 C610,302 380,302 400,332" stroke="#e8a317" stroke-width="2" stroke-dasharray="7 6" fill="none" marker-end="url(#lp)"/>
+        <text class="tag" x="470" y="314" text-anchor="middle">no → re-model price</text>
+        <path d="M712,390 C712,418 320,420 250,442" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <text class="tag" x="545" y="418" fill="#1f9d57">yes → handoff</text>
+
+        <!-- LANE 4 cy500 -->
+        <path d="M310,500 L330,500" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <path d="M470,500 L490,500" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <path d="M630,500 L678,500" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <g class="stage-n" tabindex="0" data-key="l4s1"><rect class="body" x="170" y="474" width="140" height="52" rx="11" fill="#fff" stroke="#2563cc" stroke-width="2.2"/><text class="ttl" x="240" y="498" text-anchor="middle">Check capacity</text><text class="sub" x="240" y="514" text-anchor="middle">ERP</text></g>
+        <g class="stage-n" tabindex="0" data-key="l4s2"><rect class="body" x="330" y="474" width="140" height="52" rx="11" fill="#fff" stroke="#2563cc" stroke-width="2.2"/><text class="ttl" x="400" y="498" text-anchor="middle">Validate ROI</text><text class="sub" x="400" y="514" text-anchor="middle">Budget System</text></g>
+        <g class="stage-n" tabindex="0" data-key="l4s3"><rect class="body" x="490" y="474" width="140" height="52" rx="11" fill="#fff" stroke="#2563cc" stroke-width="2.2"/><text class="ttl" x="560" y="498" text-anchor="middle">Consolidate</text><text class="sub" x="560" y="514" text-anchor="middle">Approval Flow</text></g>
+        <g class="stage-n" tabindex="0" data-key="l4d"><polygon class="body" points="712,468 748,500 712,532 676,500" fill="#fff5f4" stroke="#e2231a" stroke-width="2.2"/><text class="sub" x="712" y="504" text-anchor="middle">approve?</text></g>
+        <g class="stage-n" tabindex="0" data-key="done"><rect class="body" x="800" y="474" width="170" height="52" rx="13" fill="#eafaf0" stroke="#1f9d57" stroke-width="2.6"/><text class="ttl" x="885" y="498" text-anchor="middle" fill="#177a44">✓ Launch Approved</text><text class="sub" x="885" y="514" text-anchor="middle">journey complete</text></g>
+        <path d="M748,500 L800,500" stroke="#2563cc" stroke-width="2.2" fill="none" marker-end="url(#fwd)"/>
+        <path d="M712,468 C840,360 960,250 870,210 C760,168 360,150 250,180" stroke="#e8a317" stroke-width="1.8" stroke-dasharray="7 6" fill="none" marker-end="url(#lp)"/>
+        <text class="tag" x="930" y="330" text-anchor="middle">no → defer / re-scope</text>
+      </svg>
+    </div>
+
+    <div class="legend">
+      <div class="lg"><span class="sw" style="border-color:#2563cc;background:#fff"></span> Step (role + app)</div>
+      <div class="lg"><span class="sw" style="border-color:#e2231a;background:#fff5f4;transform:rotate(45deg)"></span> Decision branch</div>
+      <div class="lg"><span class="sw" style="border-color:#e8a317;background:#fffaf0"></span> Margin gate</div>
+      <div class="lg"><span class="sw" style="border-color:#e8a317;border-style:dashed;background:#fff"></span> Rework loop</div>
+      <div class="lg"><span class="sw" style="border-color:#1f9d57;background:#eafaf0"></span> Outcome</div>
+    </div>
+    <div class="detail" id="detail">
+      <h4>Tap a step to inspect it</h4>
+      <div class="meta">Each step names the role, the web app, the activity, and the decision event written to memory.</div>
+    </div>
+    <p class="cap">Each lane is one persona; the multiple steps inside a lane are exactly the events RPM captures within that role and app.</p>
+  </div>
+</section>
+
+<!-- WORKED EXAMPLE STORY -->
+<section class="alt">
+  <div class="wrap">
+    <p class="eyebrow">A complete example, told like a story</p>
+    <h2 class="sec">One launch decision, across multiple roles over multiple days</h2>
+    <p class="lead">Here's that same launch decision in plain language — and the event each moment quietly writes to memory.
+    Nobody changed how they work; the observers just remembered.</p>
+
+    <div class="story">
+      <div class="step"><div class="av p1">🔎</div><div class="bd">
+        <p class="who">Market Analyst — Mon, Mar 3 · 9:05 AM</p>
+        <h4>“This segment is finally worth a look.”</h4>
+        <p>She digs into category growth, the demand curve, and three competitors, then says yes — this one's worth chasing.</p>
+        <span class="ev">event: opportunity_identified</span>
+      </div></div>
+      <div class="step"><div class="av p2">📦</div><div class="bd">
+        <p class="who">Product Manager — Tue, Mar 4 · 10:15 AM</p>
+        <h4>“Let's make it the premium option.”</h4>
+        <p>He sketches the concept in PLM, locks down the feature set, and walks the scope past stakeholders.</p>
+        <span class="ev">event: product_concept_approved</span>
+      </div></div>
+      <div class="step"><div class="av p3">💲</div><div class="bd">
+        <p class="who">Commercial Analyst — Thu, Mar 6 · 11:30 AM</p>
+        <h4>“First price misses margin — re-model it.”</h4>
+        <p>Her first scenario doesn't clear margin, so she loops back, re-models, and lands on $199 where the numbers work.</p>
+        <span class="ev">event: pricing_recommendation_created</span>
+      </div></div>
+      <div class="step"><div class="av p4">🏭</div><div class="bd">
+        <p class="who">Supply Planner — Mon, Mar 10 · 2:20 PM</p>
+        <h4>“A supplier constraint means we slip two weeks.”</h4>
+        <p>Capacity looks fine until a supplier alert pops up; the date slips and Product gets pinged to adjust scope.</p>
+        <span class="ev">event: supply_plan_updated · rework</span>
+      </div></div>
+      <div class="step"><div class="av p4">🧾</div><div class="bd">
+        <p class="who">Finance Manager — Tue, Mar 11 · 3:45 PM</p>
+        <h4>“ROI holds on the new date.”</h4>
+        <p>She checks the revised cash-flow plan, the ROI still holds, and she signs off — clearing the path to the exec.</p>
+        <span class="ev">event: financial_approval</span>
+      </div></div>
+      <div class="step"><div class="av p4">✅</div><div class="bd">
+        <p class="who">Executive Sponsor — Wed, Mar 12 · 4:10 PM</p>
+        <h4>“Approved — let's launch.”</h4>
+        <p>One packet, multiple teams, a dozen steps, and two rework loops — all of it rebuildable from events alone.</p>
+        <span class="ev">event: launch_approved</span>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EVENT LOG -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The data behind the picture</p>
+    <h2 class="sec">What actually lands in the database &mdash; <span style="color:var(--heb)">events, context &amp; reasoning</span></h2>
+    <p class="lead">This is the part that makes it more than logging. Each row doesn't just record <em>what</em> happened &mdash; it also
+    stores the <strong>on-screen context</strong> the decision was made in and a short <strong>reason</strong> the assistant inferred on the
+    spot. Multiple rows per role, all sharing one business object id, are what rebuild the whole launch journey.</p>
+    <table>
+      <thead><tr><th class="mono">event_id</th><th class="mono">user_id</th><th>app</th><th>observed_event</th><th>ui_context (what the screen showed)</th><th>reasoning (inferred on the spot)</th><th class="mono">timestamp</th><th>decision</th></tr></thead>
+      <tbody>
+        <tr class="rolehead"><td colspan="8">🔎 Market Analyst · u_11827</td></tr>
+        <tr><td class="mono">evt_90001</td><td class="mono">u_11827</td><td><span class="chip-app">Research Portal</span></td><td>Scanned category growth signals, bookmarked segment</td><td>Growth chart trending +18% YoY</td><td>Segment momentum looks real &mdash; worth a deeper look</td><td class="mono">2026-03-03 09:02</td><td>—</td></tr>
+        <tr><td class="mono">evt_90008</td><td class="mono">u_11827</td><td><span class="chip-app">BI Dashboard</span></td><td>Analyzed 12-month demand curve</td><td>Demand curve steady, low seasonality</td><td>Stable demand lowers the launch risk</td><td class="mono">2026-03-03 09:18</td><td>—</td></tr>
+        <tr><td class="mono">evt_90014</td><td class="mono">u_11827</td><td><span class="chip-app">Excel</span></td><td>Compared three competitor offers</td><td>Rivals priced $169&ndash;$189, none premium</td><td>The premium tier is wide open</td><td class="mono">2026-03-03 09:35</td><td>Recommend opportunity</td></tr>
+        <tr class="rolehead"><td colspan="8">📦 Product Manager · u_24511</td></tr>
+        <tr><td class="mono">evt_90040</td><td class="mono">u_24511</td><td><span class="chip-app">PLM</span></td><td>Drafted concept brief</td><td>Market opportunity brief attached</td><td>Anchor the concept to that premium gap</td><td class="mono">2026-03-04 10:05</td><td>—</td></tr>
+        <tr><td class="mono">evt_90047</td><td class="mono">u_24511</td><td><span class="chip-app">Requirements</span></td><td>Prioritized premium feature set</td><td>Backlog ranked by value vs. effort</td><td>Lead with the three differentiating features</td><td class="mono">2026-03-04 10:22</td><td>—</td></tr>
+        <tr><td class="mono">evt_90052</td><td class="mono">u_24511</td><td><span class="chip-app">Collaboration</span></td><td>Validated scope with stakeholders</td><td>Comments resolved, scope signed off</td><td>Scope is stable enough to price</td><td class="mono">2026-03-04 10:41</td><td>Concept approved</td></tr>
+        <tr class="rolehead"><td colspan="8">💲 Commercial Analyst · u_39003</td></tr>
+        <tr><td class="mono">evt_90100</td><td class="mono">u_39003</td><td><span class="chip-app">Financial Model</span></td><td>Estimated demand at three price points</td><td>Elasticity table across $179/$199/$219</td><td>$199 balances volume and margin</td><td class="mono">2026-03-06 11:15</td><td>—</td></tr>
+        <tr><td class="mono">evt_90106</td><td class="mono">u_39003</td><td><span class="chip-app">Pricing Platform</span></td><td>Ran elasticity model, saved scenario P2</td><td>Scenario P2 margin = 31% on screen</td><td>Below the 35% target &mdash; needs rework</td><td class="mono">2026-03-06 11:29</td><td>—</td></tr>
+        <tr><td class="mono">evt_90111</td><td class="mono">u_39003</td><td><span class="chip-app">Excel</span></td><td>Estimated margin; first pass below target</td><td>Margin cell flagged red vs. target</td><td>Can’t recommend yet; re-model the price</td><td class="mono">2026-03-06 11:48</td><td>Re-model price</td></tr>
+        <tr><td class="mono">evt_90119</td><td class="mono">u_39003</td><td><span class="chip-app">Pricing Platform</span></td><td>Re-modeled at $199, margin met</td><td>Revised margin = 36%, above target</td><td>Now defensible at the premium tier</td><td class="mono">2026-03-07 12:10</td><td>Recommend $199</td></tr>
+        <tr class="rolehead"><td colspan="8">🏭 Supply &amp; Finance · u_17388 / u_28450</td></tr>
+        <tr><td class="mono">evt_90160</td><td class="mono">u_17388</td><td><span class="chip-app">ERP</span></td><td>Checked capacity, found supplier constraint</td><td>Supplier lead-time flag red on PO screen</td><td>Capacity gap forces a date slip</td><td class="mono">2026-03-10 14:20</td><td>Delay 2 weeks</td></tr>
+        <tr><td class="mono">evt_90171</td><td class="mono">u_28450</td><td><span class="chip-app">Budget System</span></td><td>Validated ROI on revised date</td><td>ROI 22% on the two-week-later plan</td><td>Still clears the hurdle rate</td><td class="mono">2026-03-11 15:05</td><td>Approve investment</td></tr>
+        <tr><td class="mono">evt_90180</td><td class="mono">u_28450</td><td><span class="chip-app">Approval Flow</span></td><td>Consolidated packet for executive</td><td>All approvals green in workflow view</td><td>Packet is ready for the exec decision</td><td class="mono">2026-03-12 15:45</td><td>Launch approved</td></tr>
+      </tbody>
+    </table>
+    <p class="cap">Every row carries three layers &mdash; the <b>event</b>, the <span class="chip-app">ui_context</span> it happened in, and a short <span class="chip-app">reasoning</span> &mdash; all sharing <span class="chip-app">business_object_id = launch_sku_family_x</span>, the thread that reconstructs the full cross-role journey.</p>
+  </div>
+</section>
+
+<!-- WHY IT MATTERS -->
+<section class="alt">
+  <div class="wrap">
+    <p class="eyebrow">Why it's optimization, not just mining</p>
+    <h2 class="sec">Why I think this is optimization, not just mining</h2>
+    <p class="lead">Once the journey is just data, the AI can answer questions no single app ever could — and then actually
+    do something about them.</p>
+    <div class="loop">
+      <div class="loopcard read"><h4>🔁 Replay</h4><p>Walk back through exactly how one launch decision moved across roles and apps — every branch and rework loop, in order.</p></div>
+      <div class="loopcard decide"><h4>🧪 Simulate</h4><p>Try what-ifs against the real history: “if supply review started earlier, how many of these two-week slips just go away?”</p></div>
+      <div class="loopcard act"><h4>⚙️ Optimize</h4><p>Suggest concrete moves — reorder steps, pre-fetch the evidence, or flag the role that keeps triggering rework.</p></div>
+    </div>
+    <div class="recap"><b>Bottom line for me:</b> AI + the Chrome DevTools Protocol is already familiar territory. Pushing it into event-first
+    process optimization is a practical, low-cost way to actually <span class="em">see, replay, and optimize how decisions
+    really flow</span> — long before anyone signs up for a heavyweight transformation platform.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap"><b>Robotic Process Optimization</b> · AI observers + Chrome DevTools Protocol (CDP) + one shared decision memory · a concept infographic.</div>
+</footer>
+
+<script>
+  const DATA = {
+    l1s1:{t:"Market Analyst · Scan signals",app:"Research Portal",act:"Scans emerging market signals and bookmarks promising segments.",ev:"market_signal_reviewed"},
+    l1s2:{t:"Market Analyst · Analyze demand",app:"BI Dashboard",act:"Analyzes the demand curve over the trailing year.",ev:"demand_analyzed"},
+    l1s3:{t:"Market Analyst · Compare rivals",app:"Excel",act:"Compares competitor offerings and pricing posture.",ev:"opportunity_identified"},
+    l1d:{t:"Decision · Opportunity strong?",app:"BI Dashboard",act:"Below threshold loops back to re-research; otherwise hands off to Product.",ev:"branch: yes → handoff · no → re-research"},
+    l2s1:{t:"Product Manager · Draft concept",app:"PLM",act:"Turns the opportunity into a first concept draft.",ev:"concept_drafted"},
+    l2s2:{t:"Product Manager · Prioritize requirements",app:"Requirements Tool",act:"Ranks the premium feature set and constraints.",ev:"requirements_prioritized"},
+    l2s3:{t:"Product Manager · Validate scope",app:"Collaboration Workspace",act:"Validates scope with stakeholders before commercial work.",ev:"product_concept_approved"},
+    l2d:{t:"Decision · Concept ready?",app:"PLM",act:"If not ready, the concept is refined; otherwise it hands off to Commercial.",ev:"branch: ready → handoff · no → refine"},
+    l3s1:{t:"Commercial Analyst · Estimate demand",app:"Financial Model",act:"Estimates demand at several candidate price points.",ev:"demand_estimated"},
+    l3s2:{t:"Commercial Analyst · Model pricing",app:"Pricing Platform",act:"Runs elasticity models and saves pricing scenarios.",ev:"pricing_scenario_saved"},
+    l3s3:{t:"Commercial Analyst · Estimate margin",app:"Excel",act:"Estimates profitability; the first pass can miss the target.",ev:"margin_estimated"},
+    l3d:{t:"Gate · Margin met?",app:"Pricing Platform",act:"Misses loop back to re-model price; a pass hands off to Supply & Finance.",ev:"branch: met → handoff · no → re-model"},
+    l4s1:{t:"Supply & Finance · Check capacity",app:"ERP",act:"Checks manufacturing capacity and supplier availability.",ev:"supply_checked"},
+    l4s2:{t:"Supply & Finance · Validate ROI",app:"Budget System",act:"Validates ROI and cash flow on the agreed date.",ev:"financial_validated"},
+    l4s3:{t:"Supply & Finance · Consolidate",app:"Approval Workflow",act:"Consolidates the recommendation packet for the executive.",ev:"recommendation_consolidated"},
+    l4d:{t:"Decision · Approve launch?",app:"Approval Workflow",act:"A no defers the launch and loops back to Product Definition.",ev:"branch: yes → approved · no → defer"},
+    done:{t:"Outcome · Launch Approved",app:"Approval Workflow",act:"The journey is complete and fully reconstructable from events.",ev:"launch_approved"}
+  };
+  const detail=document.getElementById('detail');
+  const stages=document.querySelectorAll('#pmap .stage-n');
+  function show(k){const d=DATA[k];if(!d)return;
+    stages.forEach(s=>s.classList.toggle('active',s.dataset.key===k));
+    detail.innerHTML='<h4>'+d.t+'</h4>'+
+      '<div class="meta"><strong>Web app:</strong> '+d.app+'</div>'+
+      '<div class="meta">'+d.act+'</div>'+
+      '<span class="b">event: '+d.ev+'</span>';}
+  stages.forEach(s=>{
+    s.addEventListener('click',()=>show(s.dataset.key));
+    s.addEventListener('mouseenter',()=>show(s.dataset.key));
+    s.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show(s.dataset.key);}});
+  });
+</script>
 </body>
 </html>
