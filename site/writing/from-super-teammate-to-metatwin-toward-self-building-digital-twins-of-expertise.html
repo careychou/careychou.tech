@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>From Super Teammate to MetaTwin: Toward Self-Building Digital Twins of Expertise · Carey Chou</title>
+  <meta name="description" content="An open-source skill pack: withsuper-analyst, that could learn a dataset and produce a rules playbook. super-optimizer, which tunes a playbook against historica…" />
+  <meta name="theme-color" content="#05070f" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/site.css" />
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="flow-field" aria-hidden="true">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span>
+  </div>
+  <nav class="nav" aria-label="Primary">
+    <div class="wrap">
+      <a class="brand" href="/"><span class="mark" aria-hidden="true"></span> Carey&nbsp;Chou</a>
+      <div class="nav-links">
+        <a href="/writing/" class="hide-sm">Writing</a>
+        <a href="/art/" class="hide-sm">Art</a>
+        <a href="/">← Home</a>
+      </div>
+    </div>
+  </nav>
+  <main id="main">
+    <article class="article wrap">
+      <header>
+        <p class="eyebrow">May 31, 2026</p>
+        <h1>From Super Teammate to MetaTwin: Toward Self-Building Digital Twins of Expertise</h1>
+        <p class="byline"><span>Carey Chou</span> · <span>May 31, 2026</span> · <span>4 min read</span></p>
+      </header>
+      <div class="article-body">
+        <figure><img alt="" src="/writing/img/from-super-teammate-to-metatwin-toward-self-building-digital-twins-of-expertise/01.png" /></figure><p>An open-source skill pack: withsuper-analyst, that could learn a dataset and produce a rules playbook. super-optimizer, which tunes a playbook against historical data, and super-metatwin, which builds new agents for you. This page walks through what each one does and how they fit together.</p><p>The underlying idea: any role’s expertise — designer, engineer, analyst, operator — can be written down as a small set of skills, and an agent can compose those skills on demand into a digital teammate that fits the job.</p><figure><img alt="" src="/writing/img/from-super-teammate-to-metatwin-toward-self-building-digital-twins-of-expertise/02.png" /></figure><h3>Today vs. Super Teammate</h3><p>It’s easier to see the idea side by side. On the left is how a typical analysis project gets done today — one person, one role, one deliverable. On the right is the same work expressed as a stack of reusable skills that any one person can assemble into a digital teammate.</p><figure><img alt="" src="/writing/img/from-super-teammate-to-metatwin-toward-self-building-digital-twins-of-expertise/03.png" /></figure><p>The people don’t go anywhere. Their expertise just becomes portable: the analyst’s instincts about a domain, the data engineer’s knowledge of a pipeline, the platform engineer’s deploy steps — each of those can be written down as a skill that other people (and other agents) can reuse later.</p><h3>What’s actually in a skill</h3><p>A skill in this framework isn’t a function call. It’s a small markdown file that captures a piece of expertise in a form an agent can read at runtime. There are usually three things inside it:</p><figure><img alt="" src="/writing/img/from-super-teammate-to-metatwin-toward-self-building-digital-twins-of-expertise/04.png" /></figure><h3>The seven skill families</h3><p>Skills are grouped into seven families, each focused on a different step of an analysis workflow. They’re methodology references — they don’t carry any data of their own. The agent picks which ones to load based on the question.</p><figure><img alt="" src="/writing/img/from-super-teammate-to-metatwin-toward-self-building-digital-twins-of-expertise/05.png" /></figure><p>The list is meant to grow. If you want to add a skill for design, finance, supply chain, or anything else, the format is the same. Once it’s in the folder, every agent that comes after can use it.</p><h3>Meet the agents</h3><p>Skills are the building blocks. Agents are what compose them into something a person actually uses. There are three agents in the pack today, and they’re meant to be used in sequence: one discovers rules, one tunes them, and one creates more agents when you need them.</p><figure><img alt="" src="/writing/img/from-super-teammate-to-metatwin-toward-self-building-digital-twins-of-expertise/06.png" /></figure><h3>How they fit together</h3><figure><img alt="" src="/writing/img/from-super-teammate-to-metatwin-toward-self-building-digital-twins-of-expertise/07.png" /></figure><p>The loop is the point. super-analyst produces a playbook, super-optimizer tunes it, and when you need a new kind of agent for a new kind of problem, super-metatwin writes it for you instead of you starting from a blank file.</p><p><strong>super-analyst</strong> — reads your data, finds patterns, and writes IF/THEN rules under guardrails you provide.<br><strong>super-optimizer</strong> — takes a playbook and tunes its parameters by trying small variations and scoring each one against historical data. Stops when improvement levels off.<br><strong>super-metatwin</strong> — given a short description of an agent you want, it checks what’s already in the skill library, identifies what’s missing, and writes the new agent (or, when a whole new skill family is needed, a skeleton for a human to fill in).</p><h3>A worked example: silent stockouts</h3><p>To make this concrete, here’s a scenario. You operate a nationwide chain of stores. Inventory says each SKU has stock on the shelf, and the point-of-sale feed says what sold each day. Both look healthy in the usual dashboards. But somewhere in the long tail, certain SKUs are showing positive on-hand and zero sales for weeks at a time. That’s a phantom inventory problem — the system thinks the product is there, customers can’t actually find it. A senior ops analyst would eventually catch it. Here’s how super-analyst would.</p><h3>Skills it pulls together</h3><figure><img alt="" src="/writing/img/from-super-teammate-to-metatwin-toward-self-building-digital-twins-of-expertise/08.png" /></figure><h3>What it does, step by step</h3><figure><img alt="" src="/writing/img/from-super-teammate-to-metatwin-toward-self-building-digital-twins-of-expertise/09.png" /></figure><p>That kind of analysis would normally pull in a few people from different teams to build as a one-off. Once it’s wrapped up as an agent, it just runs on a schedule against every store and every SKU. The logic doesn’t change; the scope does.</p><h3>Week two: bring in the other two agents</h3><p>Once a playbook exists, the other two agents have something to work with. Here’s a realistic next step for the same example.</p><figure><img alt="" src="/writing/img/from-super-teammate-to-metatwin-toward-self-building-digital-twins-of-expertise/10.png" /></figure><p><strong>Why this matters</strong></p><p>Every skill someone writes is something the next person doesn’t have to figure out. And with super-metatwin in the pack, the framework can extend itself — you can ask for a new agent and get a working draft back, instead of starting from scratch every time.</p><p>Open source on GitHub — <a href="https://github.com/careychou/super_teammate">github.com/careychou/super_teammate</a></p>
+      </div>
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.12);margin:3rem 0 1.5rem" />
+      <p style="margin-bottom:2rem"><a class="btn btn-ghost" href="/writing/">← All writing</a></p>
+    </article>
+  </main>
+  <footer class="site">
+    <div class="wrap">
+      <a class="brand" href="/"><span class="mark" aria-hidden="true"></span> Carey Chou</a>
+      <nav class="socials" aria-label="Elsewhere">
+        <a href="https://www.linkedin.com/in/careychou/" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/assets/site.js" defer></script>
+</body>
+</html>

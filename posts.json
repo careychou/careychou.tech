@@ -1,0 +1,97 @@
+[
+  {
+    "title": "How Do You Know an AI Answer Is Good Enough to Act On?",
+    "slug": "how-do-you-know-an-ai-answer-is-good-enough-to-act-on",
+    "date": "Aug 2, 2026",
+    "dt": "2026-08-02T00:06:32",
+    "tags": [
+      "artificial-intelligence",
+      "data-science",
+      "evaluation",
+      "ai-agent"
+    ],
+    "href": "/writing/how-do-you-know-an-ai-answer-is-good-enough-to-act-on.html",
+    "excerpt": "An analyst asks an agent a question about a product category and gets back a clean answer: here are the strongest item affinities, here is what is different abo\u2026",
+    "mins": 13
+  },
+  {
+    "title": "The AI Cognitive Quadrant",
+    "slug": "the-ai-cognitive-quadrant",
+    "date": "Jul 13, 2026",
+    "dt": "2026-07-13T00:22:16",
+    "tags": [],
+    "href": "/writing/ai-cognitive-quadrant.html",
+    "badge": "Interactive",
+    "excerpt": "A map for where rules, ML, GenAI, and agents actually fit\u200a\u2014\u200aand what each one asks of the people around\u00a0it."
+  },
+  {
+    "title": "From Digital Twin to Phygital Twin: Codifying Process Knowledge into Agentic Robotic Process\u2026",
+    "slug": "from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process",
+    "date": "Jun 27, 2026",
+    "dt": "2026-06-27T15:48:27",
+    "tags": [],
+    "href": "/writing/from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process.html",
+    "excerpt": "We\u2019ve all seen LLM agents codify a person\u2019s skills into a digital twin. But a lot of what makes work actually work isn\u2019t a skill you can hand off\u200a\u2014\u200ait\u2019s tribal \u2026",
+    "mins": 6
+  },
+  {
+    "title": "From Super Teammate to MetaTwin: Toward Self-Building Digital Twins of Expertise",
+    "slug": "from-super-teammate-to-metatwin-toward-self-building-digital-twins-of-expertise",
+    "date": "May 31, 2026",
+    "dt": "2026-05-31T20:27:16",
+    "tags": [],
+    "href": "/writing/from-super-teammate-to-metatwin-toward-self-building-digital-twins-of-expertise.html",
+    "excerpt": "An open-source skill pack: withsuper-analyst, that could learn a dataset and produce a rules playbook. super-optimizer, which tunes a playbook against historica\u2026",
+    "mins": 4
+  },
+  {
+    "title": "Test-Time Training: TTT-Discover",
+    "slug": "test-time-training-ttt-discover",
+    "date": "Feb 2, 2026",
+    "dt": "2026-02-02T02:23:24",
+    "tags": [],
+    "href": "/writing/test-time-training-ttt-discover.html",
+    "excerpt": "Most of our experience with Large Language Models (LLMs) involves a frozen brain. You send a prompt, and the model\u200a\u2014\u200awith weights fixed in time\u200a\u2014\u200apredicts the n\u2026",
+    "mins": 4
+  },
+  {
+    "title": "The New Human Roles of AI: Why Boundaries, Not Models, Define the Future of Work",
+    "slug": "the-new-human-roles-of-ai-why-boundaries-not-models-define-the-future-of-work",
+    "date": "Dec 16, 2025",
+    "dt": "2025-12-16T18:15:21",
+    "tags": [],
+    "href": "/writing/the-new-human-roles-of-ai-why-boundaries-not-models-define-the-future-of-work.html",
+    "excerpt": "The Wall Street Journal recently published an article titled \u201cFour New Jobs That May Be in Our AI Future.\u201d https://www.wsj.com/tech/ai/new-jobs-ai-future-fefd4b\u2026",
+    "mins": 4
+  },
+  {
+    "title": "Nested Learning for Recommender Systems: Bringing Fast and Slow Learning to Personalization",
+    "slug": "nested-learning-for-recommender-systems-bringing-fast-and-slow-learning-to-personalization",
+    "date": "Nov 21, 2025",
+    "dt": "2025-11-21T02:14:40",
+    "tags": [],
+    "href": "/writing/nested-learning-for-recommender-systems-bringing-fast-and-slow-learning-to-personalization.html",
+    "excerpt": "Modern recommendation systems face a\u00a0paradox:",
+    "mins": 9
+  },
+  {
+    "title": "LLM-Driven Probabilistic Sampling for Human-Guided Optimization",
+    "slug": "llm-driven-probabilistic-sampling-for-human-guided-optimization",
+    "date": "Aug 14, 2025",
+    "dt": "2025-08-14T02:21:24",
+    "tags": [],
+    "href": "/writing/llm-driven-probabilistic-sampling-for-human-guided-optimization.html",
+    "excerpt": "Originally published on https://medium.com/careychou-ideaoneer/llm-driven-probabilistic-sampling-for-human-guided-optimization-0020679d33f4",
+    "mins": 9
+  },
+  {
+    "title": "Evolving LLM Prompts to Generate Customer Shopping Narratives: AI-Guided Evolution with Cohesive\u2026",
+    "slug": "evolving-llm-prompts-to-generate-customer-shopping-narratives-ai-guided-evolution-with-cohesive",
+    "date": "Jul 19, 2025",
+    "dt": "2025-07-19T15:39:14",
+    "tags": [],
+    "href": "/writing/evolving-llm-prompts-to-generate-customer-shopping-narratives-ai-guided-evolution-with-cohesive.html",
+    "excerpt": "In a previous article, we explored how combining large language models (LLMs) with reinforcement learning can create smarter business rules. Building on the Alp\u2026",
+    "mins": 12
+  }
+]
