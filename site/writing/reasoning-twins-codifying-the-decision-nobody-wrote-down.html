@@ -1,0 +1,1229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reasoning Twins — Codifying the Decision Nobody Wrote Down · Carey Chou</title>
+<meta name="author" content="Carey Chou">
+<meta name="description" content="Transcripts and memos capture what an expert did, not the tradeoff that decided it. A method for recovering that hidden decision function — criteria, conditional weights, and constraints — so an agent can reason in new situations instead of imitating old ones.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Reasoning Twins — Codifying the Decision Nobody Wrote Down">
+<meta property="og:description" content="Recovering the hidden decision function behind expert choices, so an agent reasons instead of imitates.">
+<link rel="canonical" href="https://careychou.tech/writing/reasoning-twins-codifying-the-decision-nobody-wrote-down">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#F4F6F9; --surface:#FFFFFF; --ink:#101828; --ink-2:#4B5565; --line:#D0D7E2; --line-soft:#E4E9F0;
+    --explicit:#0F766E; --explicit-soft:#DCF2EE; --explicit-ink:#0B5C56;
+    --implicit:#D9480F; --implicit-soft:#FBE5D8; --implicit-ink:#B03A0B;
+    --model:#1D3A6B; --model-soft:#DEE7F6; --model-ink:#17305A;
+    --code-bg:#EEF2F7;
+    --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+    --body:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0F141C; --surface:#171E29; --ink:#E8EDF4; --ink-2:#A3ADBD; --line:#2C3747; --line-soft:#232D3B;
+      --explicit:#3FBFAF; --explicit-soft:#12352F; --explicit-ink:#7FDCCF;
+      --implicit:#F0813F; --implicit-soft:#3E2416; --implicit-ink:#F6A26E;
+      --model:#7FA4E6; --model-soft:#1C2A44; --model-ink:#A9C3F0;
+      --code-bg:#111823;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0F141C; --surface:#171E29; --ink:#E8EDF4; --ink-2:#A3ADBD; --line:#2C3747; --line-soft:#232D3B;
+    --explicit:#3FBFAF; --explicit-soft:#12352F; --explicit-ink:#7FDCCF;
+    --implicit:#F0813F; --implicit-soft:#3E2416; --implicit-ink:#F6A26E;
+    --model:#7FA4E6; --model-soft:#1C2A44; --model-ink:#A9C3F0;
+    --code-bg:#111823;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+  h1{font-size:clamp(40px,6vw,64px);font-weight:800;letter-spacing:-0.02em}
+  h2{font-size:clamp(28px,3.6vw,38px);font-weight:800;letter-spacing:-0.015em}
+  h3{font-size:22px;font-weight:600}
+  h4{font-size:17px;font-weight:600}
+  p{margin:0}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-2)}
+  .num{font-variant-numeric:tabular-nums}
+  code,kbd{font-family:var(--mono);font-size:0.92em;background:var(--code-bg);padding:1px 5px;border-radius:3px}
+  pre{font-family:var(--mono);font-size:14px;line-height:1.55;background:var(--code-bg);border:1px solid var(--line-soft);padding:16px 18px;overflow-x:auto;margin:0;border-radius:4px}
+  pre code{background:none;padding:0}
+
+  /* layout */
+  .col{max-width:720px;margin:0 auto;padding:0 24px}
+  .wide{max-width:980px;margin:0 auto;padding:0 24px}
+  .stack{display:flex;flex-direction:column;gap:18px}
+  section.part{padding:72px 0;border-top:1px solid var(--line-soft)}
+  section.part .head{display:grid;gap:10px;margin-bottom:32px}
+  .lede{font-size:20px;line-height:1.5;color:var(--ink-2)}
+
+  /* nav */
+  nav.toc{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line-soft)}
+  nav.toc .wide{display:flex;gap:22px;align-items:center;height:48px;overflow-x:auto;white-space:nowrap}
+  nav.toc a{font-family:var(--mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+  nav.toc a:hover,nav.toc a:focus-visible{color:var(--ink);outline:none;text-decoration:underline;text-underline-offset:6px}
+  nav.toc .brand{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:0;text-transform:none;color:var(--ink);margin-right:auto}
+
+  /* hero */
+  header.hero{padding:72px 0 56px}
+  header.hero .wide{display:grid;gap:28px}
+  header.hero .sub{font-size:21px;line-height:1.45;color:var(--ink-2);max-width:760px}
+  .claims{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:8px}
+  @media (max-width:980px){.claims{grid-template-columns:repeat(2,1fr)}}
+  .claim{background:var(--surface);border:1px solid var(--line);padding:18px 20px;display:grid;gap:8px;align-content:start}
+  .claim .k{font-family:var(--mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase}
+  .claim .t{font-family:var(--display);font-weight:600;font-size:19px;line-height:1.25}
+  .claim .d{font-size:14.5px;color:var(--ink-2)}
+  .claim.explicit .k{color:var(--explicit-ink)}
+  .claim.implicit .k{color:var(--implicit-ink)}
+  .claim.model .k{color:var(--model-ink)}
+  @media (max-width:760px){.claims{grid-template-columns:1fr}}
+
+  /* legend chips */
+  .chip{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12px;letter-spacing:0.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid var(--line)}
+  .chip::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--ink-2)}
+  .chip.explicit{background:var(--explicit-soft);color:var(--explicit-ink);border-color:transparent}
+  .chip.explicit::before{background:var(--explicit)}
+  .chip.implicit{background:var(--implicit-soft);color:var(--implicit-ink);border-color:transparent}
+  .chip.implicit::before{background:var(--implicit)}
+  .chip.model{background:var(--model-soft);color:var(--model-ink);border-color:transparent}
+  .chip.model::before{background:var(--model)}
+  .legend{display:flex;flex-wrap:wrap;gap:10px}
+
+  /* deals */
+  .deals{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .deal{background:var(--surface);border:1px solid var(--line);display:grid;grid-template-rows:auto 1fr auto}
+  .deal .top{padding:14px 18px;border-bottom:1px solid var(--line-soft);display:flex;justify-content:space-between;align-items:baseline}
+  .deal .top .name{font-family:var(--display);font-weight:600;font-size:18px}
+  .deal .top .id{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+  .deal dl{margin:0;padding:12px 18px;display:grid;grid-template-columns:auto 1fr;column-gap:14px;row-gap:6px;font-size:14.5px}
+  .deal dt{color:var(--ink-2)}
+  .deal dd{margin:0;text-align:right;font-family:var(--mono);font-size:13.5px}
+  .deal .foot{padding:12px 18px;border-top:1px solid var(--line-soft);font-size:14px;color:var(--ink-2)}
+  .deal.chosen{border-color:var(--model);box-shadow:0 0 0 2px var(--model-soft)}
+  .deal.chosen .foot{color:var(--model-ink);font-weight:600}
+  @media (max-width:760px){.deals{grid-template-columns:1fr}}
+
+  /* two-col record */
+  .record{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .pane{border:1px solid var(--line);background:var(--surface);padding:18px 20px;display:grid;gap:10px;align-content:start}
+  .pane.explicit{border-left:4px solid var(--explicit)}
+  .pane.implicit{border-left:4px solid var(--implicit)}
+  .pane .src{font-family:var(--mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-2)}
+  .pane blockquote{margin:0;font-size:15.5px;line-height:1.5;border-left:2px solid var(--line);padding-left:12px;color:var(--ink)}
+  .pane .tx{font-family:var(--mono);font-size:13.5px;line-height:1.6;color:var(--ink)}
+  .pane .tx b{font-weight:500;color:var(--ink-2)}
+  @media (max-width:760px){.record{grid-template-columns:1fr}}
+
+  .hidden-list{display:grid;gap:12px}
+  .hidden-item{display:grid;grid-template-columns:auto 1fr;gap:14px;background:var(--surface);border:1px solid var(--line);padding:16px 18px}
+  .hidden-item .tag{font-family:var(--mono);font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--implicit-ink);background:var(--implicit-soft);padding:3px 8px;border-radius:3px;height:fit-content;white-space:nowrap}
+  .hidden-item .body{display:grid;gap:4px}
+  .hidden-item .body b{font-weight:600}
+  .hidden-item .body span{font-size:15px;color:var(--ink-2)}
+
+  .callout{border:1px solid var(--line);background:var(--surface);padding:20px 22px;display:grid;gap:8px}
+  .callout.warn{border-color:var(--implicit);background:var(--implicit-soft)}
+  .callout .lbl{font-family:var(--mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--implicit-ink)}
+
+  /* figure */
+  figure{margin:0;display:grid;gap:10px}
+  figure svg{width:100%;height:auto;display:block}
+  figcaption{font-size:14px;color:var(--ink-2)}
+  .fig-band{background:var(--surface);border:1px solid var(--line);padding:22px 24px}
+  .fig-scroll{overflow-x:auto}
+
+  /* tables */
+  table{border-collapse:collapse;width:100%;font-size:15px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  th{font-family:var(--mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-2);font-weight:500}
+  td.mono{font-family:var(--mono);font-size:13.5px}
+  .table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line)}
+
+  /* tabs */
+  .tabs{display:flex;gap:0;border:1px solid var(--line);width:fit-content;background:var(--surface)}
+  .tabs button{font-family:var(--mono);font-size:12.5px;letter-spacing:0.08em;text-transform:uppercase;padding:10px 16px;border:0;background:transparent;color:var(--ink-2);cursor:pointer}
+  .tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+  .tabs button:focus-visible{outline:2px solid var(--model);outline-offset:-2px}
+  .tier{display:grid;gap:36px}
+  .tier[hidden]{display:none}
+
+  /* steps */
+  .steps{display:grid;gap:14px}
+  .step{display:grid;grid-template-columns:44px 1fr;gap:16px;background:var(--surface);border:1px solid var(--line);padding:18px 20px}
+  .step .n{font-family:var(--display);font-weight:800;font-size:26px;line-height:1;color:var(--ink-2)}
+  .step .body{display:grid;gap:8px}
+  .step .who{font-family:var(--mono);font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase}
+  .step .who.explicit{color:var(--explicit-ink)}
+  .step .who.model{color:var(--model-ink)}
+  .step .who.implicit{color:var(--implicit-ink)}
+  .step .ex{font-size:15px;color:var(--ink-2);border-left:2px solid var(--line);padding-left:12px}
+
+  /* weights chart */
+  .wchart{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .wgroup{display:grid;gap:8px}
+  .wgroup .gt{font-family:var(--display);font-weight:600;font-size:16px}
+  .wrow{display:grid;grid-template-columns:150px 1fr 40px;gap:10px;align-items:center;font-size:14px}
+  .wrow .bar{height:12px;background:var(--line-soft);position:relative}
+  .wrow .bar i{position:absolute;inset:0 auto 0 0;background:var(--model)}
+  .wrow.hi .bar i{background:var(--implicit)}
+  .wrow .v{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--ink-2)}
+  @media (max-width:640px){.wchart{grid-template-columns:1fr}}
+
+  /* spectrum */
+  .spectrum-placements{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;font-size:13.5px}
+  .sp{border:1px solid var(--line);background:var(--surface);padding:10px 12px;display:grid;gap:4px}
+  .sp .h{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-2)}
+  @media (max-width:860px){.spectrum-placements{grid-template-columns:1fr 1fr}}
+
+  .math{font-family:var(--mono);font-size:15px;line-height:1.7;background:var(--code-bg);border:1px solid var(--line-soft);padding:18px 20px;overflow-x:auto;border-radius:4px}
+  .math .c{color:var(--ink-2)}
+  .defs{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:15px}
+  .defs code{white-space:nowrap}
+
+  /* spoken-vs-operating matrix */
+  .matrix{background:var(--surface);border:1px solid var(--line);overflow-x:auto}
+  .matrix table{min-width:560px}
+  .matrix td.dot{text-align:center;width:120px}
+  .matrix th.c{text-align:center}
+  .dot i{display:inline-block;width:16px;height:16px;border-radius:50%;border:2px solid var(--ink-2);vertical-align:middle;background:transparent}
+  .dot i.half{background:linear-gradient(90deg,var(--explicit) 50%,transparent 50%);border-color:var(--explicit)}
+  .dot i.full{background:var(--explicit);border-color:var(--explicit)}
+  .dot i.drive{background:var(--implicit);border-color:var(--implicit)}
+  .matrix-key{display:flex;gap:18px;flex-wrap:wrap;font-size:13.5px;color:var(--ink-2);padding:10px 12px;border-top:1px solid var(--line-soft)}
+  .matrix-key span{display:inline-flex;align-items:center;gap:7px}
+
+  /* 2x2 shrinkage matrix */
+  .quad{display:grid;grid-template-columns:130px 1fr 1fr;grid-template-rows:auto 1fr 1fr;gap:10px}
+  .quad .ax{font-family:var(--mono);font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-2);display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.4}
+  .quad .cell{background:var(--surface);border:1px solid var(--line);padding:16px 18px;display:grid;gap:6px;align-content:start}
+  .quad .cell .k{font-family:var(--mono);font-size:12px;letter-spacing:0.06em;text-transform:uppercase}
+  .quad .cell .t{font-family:var(--display);font-weight:600;font-size:18px;line-height:1.25}
+  .quad .cell .d{font-size:14.5px;color:var(--ink-2)}
+  .quad .cell.prior{border-top:4px solid var(--model)}
+  .quad .cell.prior .k{color:var(--model-ink)}
+  .quad .cell.adapt{border-top:4px solid var(--implicit)}
+  .quad .cell.adapt .k{color:var(--implicit-ink)}
+  .quad .cell.blend{border-top:4px solid var(--ink-2)}
+  .quad .cell.regime{border-top:4px solid var(--explicit)}
+  .quad .cell.regime .k{color:var(--explicit-ink)}
+  @media (max-width:700px){.quad{grid-template-columns:1fr;grid-template-rows:none}.quad .ax{display:none}}
+
+  footer{padding:48px 0 72px;border-top:1px solid var(--line-soft);color:var(--ink-2);font-size:14px}
+  ul.plain{margin:0;padding-left:20px;display:grid;gap:8px}
+</style>
+</head>
+<body>
+
+<nav class="toc" aria-label="Sections">
+  <div class="wide">
+    <a class="brand" href="/" style="text-decoration:none">← Carey Chou</a>
+    <a href="#why">Why</a>
+    <a href="#scenario">Scenario</a>
+    <a href="#gap">The gap</a>
+    <a href="#process">Process</a>
+    <a href="#dynamics">Dynamics</a>
+    <a href="#determinism">Determinism</a>
+    <a href="#beyond">Beyond</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wide">
+    <span class="eyebrow">Working paper · Reasoning in agentic systems</span>
+    <h1>Codifying the decision nobody wrote down</h1>
+    <p class="sub">Transcripts, memos, and memory capture what an expert did and what they said about it. They do not capture the tradeoff that decided it. This paper is about recovering that tradeoff — the weights, the conditions, the constraints — so an agent can reason in new situations instead of imitating old ones.</p>
+    <div class="claims">
+      <div class="claim explicit">
+        <span class="k">Claim 1</span>
+        <span class="t">A behavior twin copies the policy.</span>
+        <span class="d">It reproduces what was done in situations that look familiar. It has nothing to say when the situation is new.</span>
+      </div>
+      <div class="claim implicit">
+        <span class="k">Claim 2</span>
+        <span class="t">A reasoning twin recovers the reward.</span>
+        <span class="d">Inverse RL's move, applied to knowledge engineering: infer the criteria and their conditional weights, then re-derive the decision anywhere.</span>
+      </div>
+      <div class="claim model">
+        <span class="k">Claim 3</span>
+        <span class="t">The twin is a state, not a snapshot.</span>
+        <span class="d">Each round of codification is a noisy observation of a hidden decision function that drifts. Shrink toward what you knew when the new evidence is noisy; adapt when it is precise.</span>
+      </div>
+      <div class="claim model">
+        <span class="k">Claim 4</span>
+        <span class="t">Determinism is measured, not designed.</span>
+        <span class="d">Which parts become hard rules and which stay judgment falls out of the fitted, filtered model — it is not a separate design choice.</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ WHY ============ -->
+<section class="part" id="why">
+  <div class="col stack">
+    <div class="head">
+      <span class="eyebrow">01 · Why this matters</span>
+      <h2>Agents are being built from the wrong artifact</h2>
+    </div>
+    <p>The dominant way to make an agent act like a specific expert is to feed it that expert's trail: chat transcripts, meeting recordings, written memos, a curated memory of past cases. A language model summarizes the trail into rules, procedures, and examples. The agent then follows them.</p>
+    <p>This works until the situation is one the trail never covered. Then the agent either freezes, applies the nearest rule out of scope, or invents a rule that sounds right. The failure is structural, not a matter of more data: the trail records <em>outputs</em> of reasoning and a partial <em>narrative</em> of it. The reasoning itself — a judgment over competing criteria under constraints — was never written down, because the expert never had to write it down, and often could not.</p>
+    <figure class="fig-band">
+      <div class="fig-scroll">
+      <svg viewBox="0 0 900 250" role="img" aria-labelledby="twins-title">
+        <title id="twins-title">Behavior twin looks up the nearest past case; reasoning twin scores the new case against recovered criteria</title>
+        <defs>
+          <marker id="arr0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ink-2)"/></marker>
+        </defs>
+        <!-- left panel -->
+        <rect x="20" y="20" width="410" height="210" fill="var(--bg)" stroke="var(--line)"/>
+        <text x="36" y="46" font-family="IBM Plex Mono, monospace" font-size="11.5" letter-spacing="1.5" fill="var(--ink-2)">BEHAVIOR TWIN · COPIES THE POLICY</text>
+        <g font-family="IBM Plex Sans, sans-serif" font-size="13.5">
+          <rect x="36" y="70" width="108" height="56" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="46" y="92" fill="var(--ink)">New situation</text>
+          <text x="46" y="112" fill="var(--ink-2)" font-family="IBM Plex Mono, monospace" font-size="12">Deal D</text>
+          <rect x="176" y="70" width="124" height="56" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="186" y="92" fill="var(--ink)">Nearest past case</text>
+          <text x="186" y="112" fill="var(--ink-2)" font-family="IBM Plex Mono, monospace" font-size="12">≈ Deal B</text>
+          <rect x="332" y="70" width="84" height="56" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="342" y="92" fill="var(--ink)">Copy action</text>
+          <text x="342" y="112" fill="var(--ink-2)" font-family="IBM Plex Mono, monospace" font-size="12">invest</text>
+        </g>
+        <g stroke="var(--ink-2)" stroke-width="1.5" fill="none" marker-end="url(#arr0)">
+          <line x1="144" y1="98" x2="174" y2="98"/><line x1="300" y1="98" x2="330" y2="98"/>
+        </g>
+        <text x="36" y="168" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="var(--implicit-ink)">✗ Wrong call.</text>
+        <text x="36" y="190" font-family="IBM Plex Sans, sans-serif" font-size="13.5" fill="var(--ink-2)">The ownership floor never appeared in any past</text>
+        <text x="36" y="209" font-family="IBM Plex Sans, sans-serif" font-size="13.5" fill="var(--ink-2)">case's narrative, so there is nothing to match on.</text>
+
+        <!-- right panel -->
+        <rect x="470" y="20" width="410" height="210" fill="var(--bg)" stroke="var(--line)"/>
+        <text x="486" y="46" font-family="IBM Plex Mono, monospace" font-size="11.5" letter-spacing="1.5" fill="var(--ink-2)">REASONING TWIN · RECOVERS THE REWARD</text>
+        <g font-family="IBM Plex Sans, sans-serif" font-size="13.5">
+          <rect x="486" y="70" width="108" height="56" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="496" y="92" fill="var(--ink)">New situation</text>
+          <text x="496" y="112" fill="var(--ink-2)" font-family="IBM Plex Mono, monospace" font-size="12">Deal D</text>
+          <rect x="626" y="70" width="104" height="56" fill="var(--explicit-soft)" stroke="var(--explicit)"/>
+          <text x="636" y="92" fill="var(--ink)">Score criteria</text>
+          <text x="636" y="112" fill="var(--explicit-ink)" font-family="IBM Plex Mono, monospace" font-size="12">g_i(s, a)</text>
+          <rect x="762" y="70" width="104" height="56" fill="var(--model-soft)" stroke="var(--model)"/>
+          <text x="772" y="92" fill="var(--ink)">Weigh, constrain</text>
+          <text x="772" y="112" fill="var(--model-ink)" font-family="IBM Plex Mono, monospace" font-size="12">w(s) · h(s)</text>
+        </g>
+        <g stroke="var(--ink-2)" stroke-width="1.5" fill="none" marker-end="url(#arr0)">
+          <line x1="594" y1="98" x2="624" y2="98"/><line x1="730" y1="98" x2="760" y2="98"/>
+        </g>
+        <text x="486" y="168" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="var(--explicit-ink)">✓ Pass — and it can say why.</text>
+        <text x="486" y="190" font-family="IBM Plex Sans, sans-serif" font-size="13.5" fill="var(--ink-2)">Ownership 9% violates the recovered constraint</text>
+        <text x="486" y="209" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink-2)">h_own : ownership ≥ 15% ∧ lead</text>
+      </svg>
+      </div>
+      <figcaption>The same new deal, two kinds of twin. Matching on past cases has nothing to say about a criterion that was never contested before. Scoring against recovered criteria does.</figcaption>
+    </figure>
+    <p>Three findings from outside AI say this is not a fringe case. Polanyi: experts know more than they can tell. Argyris and Schön: what practitioners <em>say</em> governs their decisions and what <em>actually</em> governs them diverge reliably. Nisbett and Wilson: people confidently explain choices whose real causes they had no access to. A stated rationale is evidence, not ground truth.</p>
+    <p>The rest of this paper works through a single venture-capital decision to show where the hidden reasoning lives, then lays out a process — with a statistical model at its center and a language model doing the semantic lifting — for recovering it.</p>
+  </div>
+</section>
+
+<!-- ============ SCENARIO ============ -->
+<section class="part" id="scenario">
+  <div class="wide stack">
+    <div class="head">
+      <span class="eyebrow">02 · A Series A decision</span>
+      <h2>One partner, three deals, one slot</h2>
+      <p class="lede">A general partner at a $200M early-stage fund has capacity for one more Series A lead this quarter. Three opportunities are on the table. The partner picks one, writes the memo, and the investment committee approves. Everything below is fictional but representative.</p>
+    </div>
+
+    <div class="deals">
+      <div class="deal">
+        <div class="top"><span class="name">Deal A</span><span class="id">Vertical SaaS · logistics</span></div>
+        <dl class="num">
+          <dt>ARR</dt><dd>$4.0M</dd>
+          <dt>Growth (YoY)</dt><dd>2.5×</dd>
+          <dt>Post-money</dt><dd>$60M</dd>
+          <dt>Ownership at $8M</dt><dd>13%</dd>
+          <dt>Competing term sheets</dt><dd>3</dd>
+          <dt>Founder history</dt><dd>First-time</dd>
+        </dl>
+        <div class="foot">Passed</div>
+      </div>
+      <div class="deal chosen">
+        <div class="top"><span class="name">Deal B</span><span class="id">AI infrastructure</span></div>
+        <dl class="num">
+          <dt>ARR</dt><dd>Pre-revenue</dd>
+          <dt>Growth (YoY)</dt><dd>—</dd>
+          <dt>Post-money</dt><dd>$25M</dd>
+          <dt>Ownership at $5M</dt><dd>20%</dd>
+          <dt>Competing term sheets</dt><dd>0</dd>
+          <dt>Founder history</dt><dd>Ex-CTO, prior portfolio exit</dd>
+        </dl>
+        <div class="foot">Invested — lead</div>
+      </div>
+      <div class="deal">
+        <div class="top"><span class="name">Deal C</span><span class="id">Fintech marketplace</span></div>
+        <dl class="num">
+          <dt>ARR</dt><dd>$1.5M</dd>
+          <dt>Growth (YoY)</dt><dd>4.0×</dd>
+          <dt>Post-money</dt><dd>$30M</dd>
+          <dt>Ownership at $6M</dt><dd>20%</dd>
+          <dt>Competing term sheets</dt><dd>0</dd>
+          <dt>Founder history</dt><dd>Second-time, small exit</dd>
+        </dl>
+        <div class="foot">Passed</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:20px">What the record shows</h3>
+    <p class="lede" style="max-width:720px">This is the material a codification pipeline would ingest: the investment memo and the partner meeting transcript. Both are honest. Both are incomplete.</p>
+
+    <div class="record">
+      <div class="pane explicit">
+        <span class="src">Investment memo · excerpt</span>
+        <blockquote>We recommend leading Deal B's Series A. The founder's prior execution as CTO of a portfolio company gives us unusual conviction in the team. The market timing for inference infrastructure is favorable and the entry price is attractive relative to comparable rounds. Deal A is a strong company but the round is competitive and priced accordingly. Deal C shows excellent growth but carries regulatory exposure we are not positioned to underwrite.</blockquote>
+      </div>
+      <div class="pane explicit">
+        <span class="src">Partner meeting · transcript excerpt</span>
+        <div class="tx">
+          <b>GP:</b> Honestly A is the "safest" business of the three. But we'd be one of four names on the cap table at 13%. I don't love that.<br>
+          <b>Partner 2:</b> C's growth is real though.<br>
+          <b>GP:</b> It is. I just… after last time, I'm not doing another money-movement business without the license in hand. Not this fund.<br>
+          <b>Partner 2:</b> And B?<br>
+          <b>GP:</b> I've worked with him. I know how he ships. And frankly we need an AI infra name in this vintage before we're out raising Fund IV.
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:20px">What actually decided it</h3>
+    <p class="lede" style="max-width:720px">Read the transcript again. Four things are doing the real work, and none of them appear in the memo as criteria. Two are barely spoken at all.</p>
+
+    <div class="hidden-list">
+      <div class="hidden-item">
+        <span class="tag">Constraint</span>
+        <div class="body"><b>Ownership floor — roughly 15%, and the fund must lead.</b><span>"One of four names at 13% — I don't love that." Never written as a rule. Never violated in six years of this partner's deals. A near-hard constraint that reads in the transcript as a mild preference.</span></div>
+      </div>
+      <div class="hidden-item">
+        <span class="tag">Constraint · conditional</span>
+        <div class="body"><b>No unlicensed money-movement risk — <em>in this fund</em>.</b><span>"After last time… not this fund." A constraint that did not exist two years ago, created by a prior loss, and scoped to the current vehicle. The memo calls it "regulatory exposure we are not positioned to underwrite," which sounds like analysis. It is a scar.</span></div>
+      </div>
+      <div class="hidden-item">
+        <span class="tag">Weight · situational</span>
+        <div class="body"><b>Fund narrative weight — high because it is year 4 of a 5-year deployment period.</b><span>"We need an AI infra name in this vintage before we're out raising Fund IV." This criterion has near-zero weight in year 1 of a fund and dominant weight in year 4. The memo folds it into "market timing."</span></div>
+      </div>
+      <div class="hidden-item">
+        <span class="tag">Weight · relational</span>
+        <div class="body"><b>Diligence confidence — a known founder collapses perceived execution risk.</b><span>"I know how he ships." The memo says "unusual conviction in the team," which is accurate but not operational: it does not say that prior working relationship substitutes for the two-week technical diligence the fund would otherwise require.</span></div>
+      </div>
+    </div>
+
+    <figure>
+      <div class="matrix">
+        <table>
+          <thead><tr><th>What actually drove the decision</th><th class="c">In the memo</th><th class="c">In the transcript</th><th class="c">Operating</th></tr></thead>
+          <tbody>
+            <tr><td>Ownership floor ≥ 15%, must lead</td><td class="dot"><i></i></td><td class="dot"><i class="half"></i></td><td class="dot"><i class="drive"></i></td></tr>
+            <tr><td>No unlicensed money movement (this fund)</td><td class="dot"><i class="half"></i></td><td class="dot"><i class="full"></i></td><td class="dot"><i class="drive"></i></td></tr>
+            <tr><td>Fund-narrative weight, high in year 4</td><td class="dot"><i class="half"></i></td><td class="dot"><i class="full"></i></td><td class="dot"><i class="drive"></i></td></tr>
+            <tr><td>Known founder substitutes for diligence</td><td class="dot"><i class="half"></i></td><td class="dot"><i class="half"></i></td><td class="dot"><i class="drive"></i></td></tr>
+            <tr><td>Growth, price, team quality (the stated criteria)</td><td class="dot"><i class="full"></i></td><td class="dot"><i class="full"></i></td><td class="dot"><i class="half"></i></td></tr>
+          </tbody>
+        </table>
+        <div class="matrix-key">
+          <span><i class="dot"><i></i></i>absent</span>
+          <span><i class="dot"><i class="half"></i></i>veiled — present as a feeling or a euphemism</span>
+          <span><i class="dot"><i class="full"></i></i>stated</span>
+          <span><i class="dot"><i class="drive"></i></i>actually decisive</span>
+        </div>
+      </div>
+      <figcaption>The stated criteria are fully documented and only half-decisive. The decisive criteria are, at best, veiled. A pipeline that reads the left two columns codifies the wrong row.</figcaption>
+    </figure>
+
+    <div class="callout warn">
+      <span class="lbl">The test that breaks the copy</span>
+      <p><strong>Next quarter, Deal D arrives:</strong> AI infrastructure, founder is a known ex-CTO from the network, strong market narrative — and a competitive round at $80M post, where the fund could get 9% as a follower.</p>
+      <p>A behavior twin trained on the memo and transcript has learned "AI infra + known founder + market timing → invest." It recommends Deal D. The partner would pass without a second thought: the ownership floor is a constraint, and it is not in the artifact because it was never at risk in Deal B and therefore never discussed as a criterion.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE GAP ============ -->
+<section class="part" id="gap">
+  <div class="wide stack">
+    <div class="head">
+      <span class="eyebrow">03 · The codification gap</span>
+      <h2>Why "what" and "why" are not enough</h2>
+      <p class="lede">A decision has three layers. Today's pipelines read the top two and produce an artifact that looks like the third.</p>
+    </div>
+
+    <figure class="fig-band">
+      <div class="fig-scroll">
+      <svg viewBox="0 0 900 300" role="img" aria-labelledby="layers-title">
+        <title id="layers-title">Three layers of a decision and which ones the record captures</title>
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ink-2)"/></marker>
+        </defs>
+        <!-- L1 -->
+        <rect x="20" y="20" width="560" height="70" fill="var(--explicit-soft)" stroke="var(--explicit)" stroke-width="1.5"/>
+        <text x="36" y="46" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="1.5" fill="var(--explicit-ink)">L1 · ACTION</text>
+        <text x="36" y="70" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="var(--ink)">Invested in B; passed on A and C. Wire sent. Board seat taken.</text>
+        <!-- L2 -->
+        <rect x="20" y="105" width="560" height="70" fill="var(--explicit-soft)" stroke="var(--explicit)" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text x="36" y="131" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="1.5" fill="var(--explicit-ink)">L2 · NARRATIVE</text>
+        <text x="36" y="155" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="var(--ink)">"Team conviction, market timing, attractive price, regulatory exposure."</text>
+        <!-- L3 -->
+        <rect x="20" y="190" width="560" height="90" fill="var(--implicit-soft)" stroke="var(--implicit)" stroke-width="1.5" stroke-dasharray="3 5"/>
+        <text x="36" y="216" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="1.5" fill="var(--implicit-ink)">L3 · DECISION FUNCTION</text>
+        <text x="36" y="240" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="var(--ink)">Ownership ≥ 15% (constraint) · no unlicensed money movement (constraint, this fund)</text>
+        <text x="36" y="262" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="var(--ink)">w(narrative | fund year 4) ≫ w(narrative | year 1) · known founder → skip tech diligence</text>
+        <!-- right labels -->
+        <text x="610" y="46" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="1.5" fill="var(--ink-2)">IN THE RECORD</text>
+        <text x="610" y="70" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="var(--explicit-ink)">Fully — logs, wires, cap table</text>
+        <text x="610" y="131" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="1.5" fill="var(--ink-2)">IN THE RECORD</text>
+        <text x="610" y="155" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="var(--explicit-ink)">Partially — and post-hoc</text>
+        <text x="610" y="216" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="1.5" fill="var(--ink-2)">IN THE RECORD</text>
+        <text x="610" y="240" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="var(--implicit-ink)">No. Must be inferred.</text>
+        <text x="610" y="262" font-family="IBM Plex Sans, sans-serif" font-size="14" fill="var(--ink-2)">This is what the agent needs.</text>
+      </svg>
+      </div>
+      <figcaption>Codifying from transcripts reads L1 and L2. The agent has to act from L3. The distance between them is the codification gap.</figcaption>
+    </figure>
+
+    <div class="col stack" style="padding:0">
+      <p>The memo is a projection of L3 onto a document genre. It is written to persuade a committee, so it foregrounds criteria that sound like analysis (market timing) and suppresses ones that sound like bias (I know this founder) or institutional need (we need a logo for the next raise). This is not dishonesty. It is what memos are for.</p>
+      <p>The transcript is closer, but still only surfaces criteria that were <em>contested</em> in the room. The ownership floor was mentioned because Deal A threatened it. Had all three deals offered 20%, it would never have come up — and the codified artifact would have no idea it existed.</p>
+      <p>Four kinds of thing are systematically missing, and each is missing for a different reason:</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Hidden element</th><th>Deal B example</th><th>Why the record misses it</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Hard constraints</strong></td><td>Ownership ≥ 15%; lead position</td><td>Constraints are only spoken when threatened. Most decisions never threaten them.</td></tr>
+          <tr><td><strong>Conditional weights</strong></td><td>Fund-narrative weight depends on fund year</td><td>The condition (year 4) is ambient context the speaker doesn't restate. The record has the weight at one point, never the function.</td></tr>
+          <tr><td><strong>Tradeoff ordering</strong></td><td>Narrative &gt; price &gt; growth, <em>this quarter</em></td><td>Orderings are revealed by choices, not stated. One decision reveals one comparison.</td></tr>
+          <tr><td><strong>Substitutions</strong></td><td>Known founder substitutes for technical diligence</td><td>Expressed as a feeling ("I know how he ships"), not as the procedural exception it actually is.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <figure class="fig-band">
+      <div class="fig-scroll">
+      <svg viewBox="0 0 900 270" role="img" aria-labelledby="cond-title">
+        <title id="cond-title">Narrative weight as a step function of fund year; the memo captured one point on it</title>
+        <!-- regions -->
+        <rect x="80" y="40" width="292" height="170" fill="var(--line-soft)" opacity="0.6"/>
+        <rect x="567" y="40" width="293" height="170" fill="var(--line-soft)" opacity="0.6"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.2" fill="var(--ink-2)">
+          <text x="92" y="58">R1 · YEAR ≤ 2</text>
+          <text x="384" y="58">R2 · YEAR 3</text>
+          <text x="579" y="58">R3 · YEAR ≥ 4</text>
+        </g>
+        <!-- axes -->
+        <line x1="80" y1="210" x2="860" y2="210" stroke="var(--ink-2)" stroke-width="1.2"/>
+        <line x1="80" y1="40" x2="80" y2="210" stroke="var(--ink-2)" stroke-width="1.2"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="11.5" fill="var(--ink-2)">
+          <text x="80" y="232" text-anchor="middle">Y1</text>
+          <text x="275" y="232" text-anchor="middle">Y2</text>
+          <text x="470" y="232" text-anchor="middle">Y3</text>
+          <text x="665" y="232" text-anchor="middle">Y4</text>
+          <text x="860" y="232" text-anchor="middle">Y5</text>
+          <text x="470" y="256" text-anchor="middle" letter-spacing="1.2">FUND YEAR (SITUATION)</text>
+          <text x="70" y="214" text-anchor="end">0</text>
+          <text x="70" y="129" text-anchor="end">0.5</text>
+          <text x="70" y="44" text-anchor="end">1</text>
+          <text x="80" y="30" letter-spacing="1.2">w_narrative(s)</text>
+        </g>
+        <!-- step function -->
+        <path d="M80 196 H372 V142 H567 V55 H860" fill="none" stroke="var(--explicit)" stroke-width="3"/>
+        <text x="96" y="182" font-family="IBM Plex Sans, sans-serif" font-size="13.5" fill="var(--explicit-ink)">What the agent needs: the whole function</text>
+        <!-- memo point -->
+        <circle cx="665" cy="55" r="7" fill="var(--implicit)" stroke="var(--surface)" stroke-width="2"/>
+        <text x="648" y="90" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13.5" fill="var(--implicit-ink)">What the memo captured: one point,</text>
+        <text x="648" y="108" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13.5" fill="var(--implicit-ink)">with the condition left implicit</text>
+        <line x1="650" y1="80" x2="661" y2="62" stroke="var(--implicit)" stroke-width="1.2"/>
+      </svg>
+      </div>
+      <figcaption>"Conditional preference": the weight is a function of the situation, piecewise constant over regions. A record of one decision fixes one point on that function. The regions R1–R3 are themselves something to discover — the memo never names "fund year" as a variable.</figcaption>
+    </figure>
+
+    <div class="col stack" style="padding:0">
+      <p>This is the case for a different target. Inverse reinforcement learning made the same move two decades ago: don't imitate the demonstrator's policy, recover the <em>reward function</em> that makes the policy optimal, then re-derive the policy anywhere. A digital twin that copies behavior is apprenticeship without the reward. A <strong>reasoning twin</strong> recovers the reward — criteria, conditional weights, constraints — and derives the behavior. It transfers to Deal D. And it is <em>arguable</em>: a partner can look at "ownership floor 15%" and say "actually it's 12% for AI infra," which they cannot do with a policy.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section class="part" id="process">
+  <div class="wide stack">
+    <div class="head">
+      <span class="eyebrow">04 · Improving the codification process</span>
+      <h2>Recovering the decision function</h2>
+      <p class="lede">Two tiers. <strong>Plain language</strong> explains what the process does and who does what. <strong>Full detail</strong> gives the model, the fitting procedure, and the math. Same content, different altitude.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Detail level">
+      <button role="tab" id="tab-plain" aria-selected="true" aria-controls="tier-plain">Plain language</button>
+      <button role="tab" id="tab-full" aria-selected="false" aria-controls="tier-full">Full detail</button>
+    </div>
+
+    <!-- ---------- PLAIN TIER ---------- -->
+    <div class="tier" id="tier-plain" role="tabpanel" aria-labelledby="tab-plain">
+      <div class="col stack" style="padding:0">
+        <p>The process has three roles, and the design principle is that each does only what it is good at.</p>
+        <div class="legend">
+          <span class="chip explicit">LLM · semantics</span>
+          <span class="chip model">Statistical model · weighing</span>
+          <span class="chip implicit">Human · judgment</span>
+        </div>
+        <p>The <strong>language model</strong> reads the record and proposes what the criteria might be, what alternatives were on the table, and what question to ask next. It is good at meaning and bad at weighing. The <strong>statistical model</strong> takes the proposed criteria and the observed choices and estimates how much each criterion mattered, under which conditions. It is good at weighing and cannot invent a criterion. The <strong>human</strong> is never asked to state a weight — only to make a judgment on a concrete case. Experts are reliable at the second and unreliable at the first.</p>
+      </div>
+
+      <figure class="fig-band">
+        <div class="fig-scroll">
+        <svg viewBox="0 0 900 330" role="img" aria-labelledby="loop-title">
+          <title id="loop-title">The seven-step codification loop</title>
+          <defs>
+            <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ink-2)"/></marker>
+          </defs>
+          <!-- top row -->
+          <g font-family="IBM Plex Sans, sans-serif" font-size="13.5">
+            <rect x="20" y="40" width="190" height="70" fill="var(--explicit-soft)" stroke="var(--explicit)" stroke-width="1.5"/>
+            <text x="34" y="62" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--explicit-ink)">1 · LLM</text>
+            <text x="34" y="84" fill="var(--ink)">Build decision instances</text>
+            <text x="34" y="101" fill="var(--ink-2)">situation, choice, alternatives</text>
+
+            <rect x="250" y="40" width="190" height="70" fill="var(--explicit-soft)" stroke="var(--explicit)" stroke-width="1.5"/>
+            <text x="264" y="62" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--explicit-ink)">2 · LLM</text>
+            <text x="264" y="84" fill="var(--ink)">Propose criteria</text>
+            <text x="264" y="101" fill="var(--ink-2)">over-propose; let the fit prune</text>
+
+            <rect x="480" y="40" width="190" height="70" fill="var(--model-soft)" stroke="var(--model)" stroke-width="1.5"/>
+            <text x="494" y="62" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--model-ink)">3 · MODEL</text>
+            <text x="494" y="84" fill="var(--ink)">Fit conditional weights</text>
+            <text x="494" y="101" fill="var(--ink-2)">sparse, region-indexed</text>
+
+            <rect x="710" y="40" width="170" height="70" fill="var(--model-soft)" stroke="var(--model)" stroke-width="1.5"/>
+            <text x="724" y="62" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--model-ink)">4 · MODEL + LLM</text>
+            <text x="724" y="84" fill="var(--ink)">Find conflicts</text>
+            <text x="724" y="101" fill="var(--ink-2)">→ propose hidden context</text>
+
+            <!-- bottom row -->
+            <rect x="710" y="190" width="170" height="70" fill="var(--implicit-soft)" stroke="var(--implicit)" stroke-width="1.5"/>
+            <text x="724" y="212" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--implicit-ink)">5 · HUMAN</text>
+            <text x="724" y="234" fill="var(--ink)">Answer contrastive query</text>
+            <text x="724" y="251" fill="var(--ink-2)">"would you still, if…?"</text>
+
+            <rect x="480" y="190" width="190" height="70" fill="var(--model-soft)" stroke="var(--model)" stroke-width="1.5"/>
+            <text x="494" y="212" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--model-ink)">6 · MODEL</text>
+            <text x="494" y="234" fill="var(--ink)">Place on determinism spectrum</text>
+            <text x="494" y="251" fill="var(--ink-2)">rule · judgment · constraint · escalate</text>
+
+            <rect x="250" y="190" width="190" height="70" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="1.5"/>
+            <text x="264" y="212" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--ink-2)">7 · AGENT</text>
+            <text x="264" y="234" fill="var(--ink)">Deploy and monitor</text>
+            <text x="264" y="251" fill="var(--ink-2)">escalations, overrides</text>
+          </g>
+          <!-- arrows top row -->
+          <g stroke="var(--ink-2)" stroke-width="1.5" fill="none" marker-end="url(#arr2)">
+            <line x1="210" y1="75" x2="248" y2="75"/>
+            <line x1="440" y1="75" x2="478" y2="75"/>
+            <line x1="670" y1="75" x2="708" y2="75"/>
+            <line x1="795" y1="110" x2="795" y2="188"/>
+            <line x1="710" y1="225" x2="672" y2="225"/>
+            <line x1="480" y1="225" x2="442" y2="225"/>
+          </g>
+          <!-- return arrow 7 -> 3 (new instances) and 5 -> 3 -->
+          <g stroke="var(--implicit)" stroke-width="1.5" fill="none" stroke-dasharray="5 4" marker-end="url(#arr2)">
+            <path d="M345 260 L345 300 L575 300 L575 112"/>
+          </g>
+          <text x="360" y="292" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--implicit-ink)">NEW INSTANCES → REFIT</text>
+          <g stroke="var(--implicit)" stroke-width="1.5" fill="none" stroke-dasharray="5 4" marker-end="url(#arr2)">
+            <path d="M795 190 L795 150 L680 150 L680 112"/>
+          </g>
+          <text x="690" y="140" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--implicit-ink)">ANSWER → REFIT</text>
+        </svg>
+        </div>
+        <figcaption>The loop never terminates. Every escalation and override at runtime is a new instance; the model is refit; the artifact is re-issued.</figcaption>
+      </figure>
+
+      <div class="steps">
+        <div class="step">
+          <span class="n">1</span>
+          <div class="body">
+            <span class="who explicit">LLM · Build decision instances</span>
+            <p>Turn the record into a list of decisions, each with the situation, the choice, and — critically — the alternatives that were rejected. The transcript shows what was done, not what was passed on. The LLM reconstructs the alternatives from the record and, where the record is silent, proposes plausible ones for the human to confirm.</p>
+            <p class="ex">Deal B: situation = {fund year 4, three deals, one slot}; chosen = B; alternatives = {A, C, pass on all}. Plus the prior six years of this partner's deals, each reconstructed the same way.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="n">2</span>
+          <div class="body">
+            <span class="who explicit">LLM · Propose criteria and context features</span>
+            <p>Read the memos and transcripts and propose what the partner might be weighing — generously. Over-proposing is fine; the fit in step 3 will zero out what does not matter. Also propose <em>situation features</em> that might change the weights: fund year, sector heat, whether the partner has a personal relationship with the founder.</p>
+            <p class="ex">Proposed criteria: growth, price, ownership, team quality, founder relationship, market narrative, regulatory exposure, competitiveness of round. Proposed context: fund year, dry powder remaining, recent portfolio loss.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="n">3</span>
+          <div class="body">
+            <span class="who model">Statistical model · Fit conditional weights</span>
+            <p>Given the instances and the criteria, estimate how strongly each criterion pulled the choice, and whether that strength depends on the situation. The model is deliberately simple and interpretable — an expert produces dozens of decisions, not millions — and it outputs a small table: <em>this criterion, this weight, under these conditions</em>.</p>
+            <p class="ex">Output: ownership has a sharp cliff near 15% (looks like a constraint, not a preference). Market-narrative weight is near zero in fund years 1–2, dominant in years 4–5. Regulatory exposure flips from mild negative to near-veto after the loss in year 2.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="n">4</span>
+          <div class="body">
+            <span class="who model">Model + LLM · Find conflicts, propose hidden context</span>
+            <p>Look for pairs of decisions that look the same on the current features but went opposite ways. These are conflicts. Instead of averaging them away, ask the LLM: what could distinguish these two cases? Add its proposal as a feature and refit. A conflict is a missing variable until proven otherwise.</p>
+            <p class="ex">Two AI deals in year 1 with strong founders — both passed. Deal B in year 4 — invested. The features cannot separate them. LLM proposes "years remaining in deployment period." Refit: separation is clean.</p>
+          </div>
+        </div>
+        <figure class="fig-band">
+          <div class="fig-scroll">
+          <svg viewBox="0 0 900 300" role="img" aria-labelledby="conf-title">
+            <title id="conf-title">Three AI deals overlap on two features; adding fund year separates the passes from the investment</title>
+            <!-- left panel -->
+            <rect x="20" y="20" width="400" height="260" fill="var(--bg)" stroke="var(--line)"/>
+            <text x="36" y="44" font-family="IBM Plex Mono, monospace" font-size="11.5" letter-spacing="1.5" fill="var(--ink-2)">BEFORE · CURRENT FEATURES</text>
+            <text x="36" y="63" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--implicit-ink)">Same features, opposite choices — the fit cannot separate them</text>
+            <line x1="70" y1="250" x2="400" y2="250" stroke="var(--ink-2)" stroke-width="1.2"/>
+            <line x1="70" y1="80" x2="70" y2="250" stroke="var(--ink-2)" stroke-width="1.2"/>
+            <text x="235" y="270" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1" fill="var(--ink-2)">FOUNDER STRENGTH →</text>
+            <text x="78" y="92" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1" fill="var(--ink-2)">NARRATIVE FIT ↑</text>
+            <g fill="var(--ink-2)" opacity="0.55">
+              <circle cx="130" cy="220" r="5"/><circle cx="185" cy="195" r="5"/><circle cx="215" cy="230" r="5"/><circle cx="260" cy="175" r="5"/><circle cx="160" cy="150" r="5"/><circle cx="300" cy="205" r="5"/>
+            </g>
+            <!-- overlapping AI deals -->
+            <circle cx="338" cy="118" r="10" fill="var(--surface)" stroke="var(--implicit)" stroke-width="2"/>
+            <text x="338" y="122.5" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="var(--implicit-ink)">✕</text>
+            <circle cx="356" cy="130" r="10" fill="var(--surface)" stroke="var(--implicit)" stroke-width="2"/>
+            <text x="356" y="134.5" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="var(--implicit-ink)">✕</text>
+            <circle cx="349" cy="112" r="10" fill="var(--model)" stroke="var(--surface)" stroke-width="2"/>
+            <text x="372" y="150" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-2)" text-anchor="end">2 passed · 1 invested</text>
+            <!-- right panel -->
+            <rect x="480" y="20" width="400" height="260" fill="var(--bg)" stroke="var(--line)"/>
+            <text x="496" y="44" font-family="IBM Plex Mono, monospace" font-size="11.5" letter-spacing="1.5" fill="var(--ink-2)">AFTER · ADD "FUND YEAR" (LLM-PROPOSED)</text>
+            <text x="496" y="63" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--explicit-ink)">Clean separation — the conflict was a missing variable</text>
+            <line x1="530" y1="180" x2="850" y2="180" stroke="var(--ink-2)" stroke-width="1.2"/>
+            <g font-family="IBM Plex Mono, monospace" font-size="11.5" fill="var(--ink-2)">
+              <text x="530" y="202" text-anchor="middle">Y1</text><text x="610" y="202" text-anchor="middle">Y2</text><text x="690" y="202" text-anchor="middle">Y3</text><text x="770" y="202" text-anchor="middle">Y4</text><text x="850" y="202" text-anchor="middle">Y5</text>
+              <text x="690" y="226" text-anchor="middle" letter-spacing="1">FUND YEAR →</text>
+            </g>
+            <line x1="730" y1="100" x2="730" y2="180" stroke="var(--explicit)" stroke-width="1.5" stroke-dasharray="5 4"/>
+            <text x="730" y="92" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1" fill="var(--explicit-ink)">REGION SPLIT</text>
+            <circle cx="545" cy="180" r="10" fill="var(--surface)" stroke="var(--implicit)" stroke-width="2"/>
+            <text x="545" y="184.5" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="var(--implicit-ink)">✕</text>
+            <circle cx="590" cy="180" r="10" fill="var(--surface)" stroke="var(--implicit)" stroke-width="2"/>
+            <text x="590" y="184.5" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="var(--implicit-ink)">✕</text>
+            <circle cx="770" cy="180" r="10" fill="var(--model)" stroke="var(--surface)" stroke-width="2"/>
+            <text x="567" y="150" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-2)">passed · w_narrative ≈ 0</text>
+            <text x="790" y="150" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-2)">invested · w_narrative ≈ 0.9</text>
+          </svg>
+          </div>
+          <figcaption>Step 4 in one picture. The residual cluster is not noise to average over; it is the strongest available evidence that a variable is missing. The LLM's job is to name it; the fit's job is to test it.</figcaption>
+        </figure>
+        <div class="step">
+          <span class="n">5</span>
+          <div class="body">
+            <span class="who implicit">Human · Answer one contrastive question</span>
+            <p>Pick the single question whose answer would most reduce uncertainty in the weights — usually a minimal variation of a real case, at a suspected boundary — and ask the expert to judge it. Never "what are your criteria?" Always "would you still, if this one thing were different?"</p>
+            <p class="ex">"You led Deal B at 20%. Same deal, same founder, but $50M post and you get 10% as a follower. Still in?" — "No." One answer converts a suspected constraint into a confirmed one. "What if 14%?" — "…probably. If we lead." Threshold found.</p>
+          </div>
+        </div>
+        <figure class="fig-band">
+          <div class="fig-scroll">
+          <svg viewBox="0 0 900 180" role="img" aria-labelledby="bis-title">
+            <title id="bis-title">Contrastive queries on ownership locate the constraint threshold by bisection</title>
+            <text x="80" y="30" font-family="IBM Plex Mono, monospace" font-size="11.5" letter-spacing="1.5" fill="var(--ink-2)">CONTRASTIVE QUERIES ON ONE FEATURE · OWNERSHIP AT ENTRY</text>
+            <!-- threshold band -->
+            <rect x="431" y="70" width="39" height="40" fill="var(--implicit-soft)"/>
+            <text x="450" y="62" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="var(--implicit-ink)">τ ≈ 14–15%</text>
+            <!-- axis -->
+            <line x1="80" y1="90" x2="860" y2="90" stroke="var(--ink-2)" stroke-width="1.5"/>
+            <g font-family="IBM Plex Mono, monospace" font-size="11.5" fill="var(--ink-2)">
+              <line x1="80" y1="86" x2="80" y2="94" stroke="var(--ink-2)"/><text x="80" y="112" text-anchor="middle">5%</text>
+              <line x1="275" y1="86" x2="275" y2="94" stroke="var(--ink-2)"/><text x="275" y="112" text-anchor="middle">10%</text>
+              <line x1="470" y1="86" x2="470" y2="94" stroke="var(--ink-2)"/><text x="470" y="112" text-anchor="middle">15%</text>
+              <line x1="665" y1="86" x2="665" y2="94" stroke="var(--ink-2)"/><text x="665" y="112" text-anchor="middle">20%</text>
+              <line x1="860" y1="86" x2="860" y2="94" stroke="var(--ink-2)"/><text x="860" y="112" text-anchor="middle">25%</text>
+            </g>
+            <!-- original -->
+            <circle cx="665" cy="90" r="9" fill="var(--model)" stroke="var(--surface)" stroke-width="2"/>
+            <text x="665" y="140" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--model-ink)">Deal B as done · invested</text>
+            <!-- queries -->
+            <circle cx="275" cy="90" r="9" fill="var(--surface)" stroke="var(--implicit)" stroke-width="2"/>
+            <text x="275" y="94.5" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="var(--implicit-ink)">✕</text>
+            <text x="275" y="140" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--ink-2)">Q1 · "10%, follower?" — No</text>
+            <circle cx="353" cy="90" r="9" fill="var(--surface)" stroke="var(--implicit)" stroke-width="2"/>
+            <text x="353" y="94.5" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="var(--implicit-ink)">✕</text>
+            <text x="353" y="160" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--ink-2)">Q3 · "12%?" — No</text>
+            <circle cx="431" cy="90" r="9" fill="var(--surface)" stroke="var(--model)" stroke-width="2"/>
+            <text x="431" y="94.5" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="var(--model-ink)">?</text>
+            <text x="470" y="140" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--ink-2)">Q2 · "14%, we lead?" — "…probably"</text>
+          </svg>
+          </div>
+          <figcaption>Step 5 in one picture. Three judgments on concrete variants of a real deal — never "what is your threshold?" — pin a constraint the partner never stated to a one-point band. Each answer is one row in the fit, with very low noise.</figcaption>
+        </figure>
+        <div class="step">
+          <span class="n">6</span>
+          <div class="body">
+            <span class="who model">Statistical model · Place on the determinism spectrum</span>
+            <p>For each decision region, measure how predictable the choice is once the criteria are known. Highly predictable and stable → codify as a rule. Unpredictable even after context discovery → codify as guided judgment with the weights and contrasting examples attached. Irreversible downside → constraint, regardless. Section 06 covers this; section 05 makes it track the evidence over time.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="n">7</span>
+          <div class="body">
+            <span class="who">Agent · Deploy, monitor, loop</span>
+            <p>The agent carries the criteria explicitly and scores new situations against them. Every time it escalates (situation outside the evidence) or is overridden (human disagrees), that is a new instance. Return to step 3.</p>
+            <p class="ex">Deal D arrives. Ownership at 9% violates the constraint. The agent passes and can say exactly why. No memo ever said "ownership floor."</p>
+          </div>
+        </div>
+      </div>
+
+      <figure class="fig-band">
+        <div class="wchart">
+          <div class="wgroup">
+            <span class="gt">Fitted weights · fund year 1</span>
+            <div class="wrow"><span>Growth</span><div class="bar"><i style="width:78%"></i></div><span class="v">0.78</span></div>
+            <div class="wrow"><span>Price / ownership</span><div class="bar"><i style="width:64%"></i></div><span class="v">0.64</span></div>
+            <div class="wrow"><span>Team quality</span><div class="bar"><i style="width:70%"></i></div><span class="v">0.70</span></div>
+            <div class="wrow"><span>Founder relationship</span><div class="bar"><i style="width:30%"></i></div><span class="v">0.30</span></div>
+            <div class="wrow"><span>Market narrative</span><div class="bar"><i style="width:8%"></i></div><span class="v">0.08</span></div>
+          </div>
+          <div class="wgroup">
+            <span class="gt">Fitted weights · fund year 4</span>
+            <div class="wrow"><span>Growth</span><div class="bar"><i style="width:44%"></i></div><span class="v">0.44</span></div>
+            <div class="wrow"><span>Price / ownership</span><div class="bar"><i style="width:52%"></i></div><span class="v">0.52</span></div>
+            <div class="wrow"><span>Team quality</span><div class="bar"><i style="width:68%"></i></div><span class="v">0.68</span></div>
+            <div class="wrow hi"><span>Founder relationship</span><div class="bar"><i style="width:62%"></i></div><span class="v">0.62</span></div>
+            <div class="wrow hi"><span>Market narrative</span><div class="bar"><i style="width:91%"></i></div><span class="v">0.91</span></div>
+          </div>
+        </div>
+        <figcaption>Illustrative fitted weights for the same partner in two situations. The criteria did not change; the weights did. A behavior twin sees two inconsistent partners. A reasoning twin sees one partner and one variable — fund year — that was never in the memo. Ownership floor and regulatory exposure are constraints, not weights, and are not shown.</figcaption>
+      </figure>
+    </div>
+
+    <!-- ---------- FULL TIER ---------- -->
+    <div class="tier" id="tier-full" role="tabpanel" aria-labelledby="tab-full" hidden>
+      <div class="col stack" style="padding:0">
+        <h3>4.1 The object being recovered</h3>
+        <p>A decision instance is a situation <code>s</code>, a chosen action <code>a</code>, and the set of alternatives <code>A(s)</code> that were available. Criteria are functions <code>g_i(s, a) ∈ ℝ</code> scoring how well action <code>a</code> serves criterion <code>i</code> in situation <code>s</code>. Hard constraints are indicator functions <code>h_j(s, a) ∈ {0, 1}</code>. The decision function is modeled as a conditional choice model:</p>
+        <div class="math">
+P(a ≻ a' | s) = σ( Σ<sub>i</sub> w<sub>i</sub>(s) · [ g<sub>i</sub>(s, a) − g<sub>i</sub>(s, a') ] )<br>
+<span class="c">subject to  h<sub>j</sub>(s, a) = 1  for all j</span><br><br>
+<span class="c">where  σ(x) = 1 / (1 + e<sup>−x</sup>)   and   w<sub>i</sub>(s) = w<sub>i</sub><sup>(k)</sup>  for  s ∈ R<sub>k</sub></span>
+        </div>
+        <p>This is a Bradley–Terry / Luce choice model — the same form as the reward model in RLHF — with two deliberate changes. First, weights are <strong>conditional</strong>: <code>w(s)</code> is piecewise constant over a small set of regions <code>R_k</code> defined by scope conditions. The regions are the codified context; the weights are the codified tradeoff. Second, the probability is <strong>meaningful</strong>: <code>P ≈ 1</code> means the tradeoff is settled in that region; <code>P ≈ 0.5</code> means genuine indifference or a variable not yet found. Lexicographic priority is the limit <code>w_i / w_j → ∞</code>. A hard constraint is an infinite penalty, and is represented separately rather than as a large weight so that it is never traded.</p>
+        <div class="defs">
+          <code>s</code><span>situation — the VC case: {fund year, deals on the table, dry powder, recent loss, …}</span>
+          <code>a, A(s)</code><span>the choice and the alternatives — {invest A, invest B, invest C, pass}</span>
+          <code>g_i(s,a)</code><span>criterion score — growth multiple, ownership %, team score, narrative fit, regulatory exposure</span>
+          <code>R_k</code><span>regions — e.g. {fund year ≤ 2}, {fund year ≥ 4}, {post-loss}</span>
+          <code>w_i^(k)</code><span>weight of criterion i in region k — the thing to recover</span>
+          <code>h_j</code><span>constraints — ownership ≥ 15% ∧ lead; no unlicensed money movement (post-loss region only)</span>
+        </div>
+      </div>
+
+      <div class="col stack" style="padding:0">
+        <h3>4.2 Why this and not policy imitation</h3>
+        <p>Behavioral cloning fits <code>π(a | s)</code> directly. It has no notion of <em>why</em> and no way to score an action it has not seen taken in a situation like <code>s</code>. Inverse RL fits the reward <code>R</code> such that the observed <code>π</code> is (near-)optimal, and derives <code>π* = argmax R</code> anywhere. The model above is a linear-in-criteria, region-conditional reward with the argmax softened into a choice probability. The softening matters: it lets the fitted <code>P</code> carry information about how settled each tradeoff is, which section 06 uses directly.</p>
+        <p>The choice of a low-capacity, interpretable model is not a limitation to apologize for. An expert produces tens to low hundreds of instances. Anything richer than a sparse logistic model over LLM-proposed features will overfit, and — more importantly — cannot be argued with by the expert whose reasoning it claims to represent.</p>
+      </div>
+
+      <div class="col stack" style="padding:0">
+        <h3>4.3 Instance and criteria construction</h3>
+        <p><strong>Instances.</strong> From transcripts, memos, and logs, extract <code>(s, a, A(s))</code>. The alternatives are load-bearing: the model learns from <em>differences</em> <code>g(s,a) − g(s,a')</code>, so a missing or invented alternative directly corrupts the fitted reward. Where the record does not state alternatives, the LLM proposes them and they are queued for human confirmation in 4.5 before they carry weight.</p>
+        <p><strong>Criteria.</strong> The LLM proposes candidate <code>g_i</code> from narrative (L2) and from action patterns (L1) independently, and candidate region features from ambient context. Over-propose. The L1 penalty in 4.4 prunes. Criteria that appear in both L1- and L2-derived sets start with higher prior confidence; criteria in only one set are flagged as "stated but not revealed" or "revealed but not stated" — the latter are the interesting ones.</p>
+      </div>
+
+      <div class="col stack" style="padding:0">
+        <h3>4.4 Fitting</h3>
+        <p>For a fixed region assignment, Bradley–Terry reduces to logistic regression on feature differences. For each instance and each rejected alternative <code>a' ∈ A(s) \ {a}</code>, construct a row <code>Δ = g(s, a) − g(s, a')</code> with label 1. Fit:</p>
+        <div class="math">
+minimize<sub>w</sub>   Σ<sub>(s,a,a')</sub> −log σ( w<sub>(k(s))</sub> · Δ ) + λ ‖w‖<sub>1</sub><br>
+<span class="c">k(s) = region index of s;  λ chosen by leave-one-decision-out cross-validation</span>
+        </div>
+        <p><strong>Regions</strong> are found by fitting a shallow decision tree (depth ≤ 2) over the candidate context features with the <em>residuals</em> of a single-region fit as the target; each leaf becomes an <code>R_k</code>. Constrain regions to be few and nameable — a region the expert cannot recognize as a real situation is a fitting artifact.</p>
+        <p><strong>Constraints</strong> are detected rather than fit. A criterion whose fitted weight is very large <em>and</em> whose observed instances never fall below a threshold <code>τ</code> on the chosen action — while alternatives below <code>τ</code> were rejected — is promoted to a candidate constraint <code>h: g_i(s,a) ≥ τ</code> and confirmed by elicitation (4.6). In the VC case, ownership behaves this way: no chosen deal below 15%, several rejected deals below it, and a fitted weight that the L1 penalty keeps trying to shrink but cannot.</p>
+      </div>
+
+      <div class="col stack" style="padding:0">
+        <h3>4.5 Conflict detection as latent-variable discovery</h3>
+        <p>After fitting, compute the per-instance log-likelihood. Instances with low likelihood are those the model "disagrees with." Cluster them by <code>φ(s)</code>. A cluster of poorly-explained instances whose situations are near-identical on current features but whose choices diverge is a <strong>conflict</strong>, and there are only three explanations:</p>
+        <ul class="plain">
+          <li><strong>A missing region feature.</strong> Ask the LLM: given these two groups of situations, what plausible variable separates them? Add it to the candidate features, refit, and keep it if held-out likelihood improves. This is decision-tree splitting on residuals with an LLM as the feature generator.</li>
+          <li><strong>Genuine inconsistency.</strong> No proposed feature separates them and the expert, shown the pair, confirms they would decide differently today. Record the more recent decision as authoritative (supersede) and flag the drift.</li>
+          <li><strong>A values disagreement</strong> (multi-expert case). Two experts' instances disagree uniformly across all regions rather than in one. No feature will fix this; it is escalated as a standing policy question, not resolved by the model.</li>
+        </ul>
+        <p>Formally, for a conflict cluster <code>C</code>, the LLM proposes features <code>z_1 … z_m</code>; each is scored by the information gain on the choice labels within <code>C</code>; the top feature is added if its held-out improvement exceeds a threshold. In the VC case, the year-1 AI passes and the year-4 AI investment form exactly such a cluster, and "years remaining in deployment period" has the highest information gain of the proposals.</p>
+      </div>
+
+      <div class="col stack" style="padding:0">
+        <h3>4.6 Active elicitation</h3>
+        <p>The expert's time is the scarce resource, so each question must be chosen to maximize expected information gain over the posterior on <code>w</code>. With a Laplace approximation to the posterior, this is standard Bayesian active learning for logistic regression: choose the query pair <code>(s, a, a')</code> that maximizes</p>
+        <div class="math">
+EIG(s, a, a') = H[ P(a ≻ a' | s) ] − E<sub>w ~ posterior</sub> H[ P(a ≻ a' | s, w) ]
+        </div>
+        <p>In practice the highest-EIG queries are minimal variations of real cases near a suspected boundary: take an actual instance, perturb one feature toward the region where the model is uncertain, and ask "still?" The expert answers a concrete pairwise judgment — never a weight — and the answer is a new row in the fit. Constraint candidates from 4.4 are confirmed the same way: perturb the suspected constraint below <code>τ</code> and ask; a flip confirms the constraint and a bisection locates <code>τ</code>.</p>
+        <p>Alternatives proposed by the LLM in 4.3 are confirmed here too: "Was passing on all three genuinely on the table?" A rejected alternative that was never real is removed before it distorts the fit.</p>
+      </div>
+
+      <div class="col stack" style="padding:0">
+        <h3>4.7 What the fitted object looks like</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Element</th><th>Region</th><th>Value</th><th>Provenance</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">h_own: ownership ≥ 0.15 ∧ lead</td><td>all</td><td class="mono">constraint (τ from bisection: 0.14–0.15)</td><td class="mono">17 instances; 2 elicitation answers</td></tr>
+              <tr><td class="mono">h_reg: no unlicensed money movement</td><td>post-loss (year ≥ 3)</td><td class="mono">constraint</td><td class="mono">4 instances; 1 elicitation; transcript "not this fund"</td></tr>
+              <tr><td class="mono">w_narrative</td><td>year ≤ 2</td><td class="mono num">0.08 ± 0.11</td><td class="mono">9 instances</td></tr>
+              <tr><td class="mono">w_narrative</td><td>year ≥ 4</td><td class="mono num">0.91 ± 0.14</td><td class="mono">6 instances; 1 elicitation</td></tr>
+              <tr><td class="mono">w_founder_rel</td><td>year ≥ 4</td><td class="mono num">0.62 ± 0.20</td><td class="mono">6 instances — substitutes for diligence step</td></tr>
+              <tr><td class="mono">w_growth</td><td>all</td><td class="mono num">0.78 / 0.44 by region</td><td class="mono">23 instances</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:14px;color:var(--ink-2)">Illustrative values. The ± is the posterior standard deviation; wide intervals are where the next elicitation query should go. Every row traces to the instances and answers that produced it, so any row can be disputed by the expert and re-fit without it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DYNAMICS ============ -->
+<section class="part" id="dynamics">
+  <div class="wide stack">
+    <div class="head">
+      <span class="eyebrow">05 · The update machine</span>
+      <h2>The decision function is a hidden state, and codification is a noisy reading of it</h2>
+      <p class="lede">Section 04 recovers the decision function from one batch of evidence. But the partner's weights drift — a fund ages, a loss leaves a scar, a market heats up — and each round of codification is itself noisy: a few new deals, a handful of answers. Two mistakes are available: overwrite what you knew with a noisy new fit, or ignore real change because it disagrees with the old artifact. A state-space filter is the principled middle.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Detail level for dynamics">
+      <button role="tab" id="tab-dyn-plain" aria-selected="true" aria-controls="tier-dyn-plain">Plain language</button>
+      <button role="tab" id="tab-dyn-full" aria-selected="false" aria-controls="tier-dyn-full">Full detail</button>
+    </div>
+
+    <!-- ---------- PLAIN ---------- -->
+    <div class="tier" id="tier-dyn-plain" role="tabpanel" aria-labelledby="tab-dyn-plain">
+      <div class="col stack" style="padding:0">
+        <p>Think of the partner's real decision function as a <strong>hidden state</strong> — the weights and thresholds that are actually in force this quarter. You never see it directly. What you see, each period, is a <strong>reading</strong> of it: the weights the fit in section 04 produces from that period's deals and elicitation answers, together with how uncertain that fit is (the ± column in the fitted table).</p>
+        <p>The update rule is the one every navigator and every Kalman filter uses. Carry forward what you believed last period, allowing for some drift. Take the new reading. Then move your belief toward the reading by an amount that depends on <em>which is more trustworthy</em>: if the reading is noisy and your prior is sharp, barely move — <strong>shrink toward the prior</strong>. If the prior is vague and the reading is precise, move most of the way — <strong>adapt to the observation</strong>. The amount you move is the gain, and it is computed, not chosen.</p>
+      </div>
+
+      <figure class="fig-band">
+        <div class="fig-scroll">
+        <svg viewBox="0 0 900 210" role="img" aria-labelledby="kal-title">
+          <title id="kal-title">Predict from the prior state, observe a new codification, compute the gain, update the state, carry it forward</title>
+          <defs>
+            <marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ink-2)"/></marker>
+          </defs>
+          <g font-family="IBM Plex Sans, sans-serif" font-size="13.5">
+            <rect x="20" y="40" width="190" height="96" fill="var(--model-soft)" stroke="var(--model)" stroke-width="1.5"/>
+            <text x="34" y="62" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--model-ink)">PRIOR STATE</text>
+            <text x="34" y="84" fill="var(--ink)">What we believed last period,</text>
+            <text x="34" y="102" fill="var(--ink)">plus allowance for drift</text>
+            <text x="34" y="124" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--model-ink)">x̂ₜ₋₁ , P + Q</text>
+
+            <rect x="250" y="40" width="190" height="96" fill="var(--explicit-soft)" stroke="var(--explicit)" stroke-width="1.5"/>
+            <text x="264" y="62" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--explicit-ink)">OBSERVATION</text>
+            <text x="264" y="84" fill="var(--ink)">This period's fit from §04,</text>
+            <text x="264" y="102" fill="var(--ink)">with its own uncertainty</text>
+            <text x="264" y="124" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--explicit-ink)">yₜ , R  (the ± column)</text>
+
+            <rect x="480" y="40" width="190" height="96" fill="var(--implicit-soft)" stroke="var(--implicit)" stroke-width="1.5"/>
+            <text x="494" y="62" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--implicit-ink)">GAIN · THE DIAL</text>
+            <text x="494" y="84" fill="var(--ink)">How far to move: prior</text>
+            <text x="494" y="102" fill="var(--ink)">uncertainty vs. reading noise</text>
+            <text x="494" y="124" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--implicit-ink)">K = P / (P + R)</text>
+
+            <rect x="710" y="40" width="170" height="96" fill="var(--model-soft)" stroke="var(--model)" stroke-width="1.5"/>
+            <text x="724" y="62" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--model-ink)">UPDATED STATE</text>
+            <text x="724" y="84" fill="var(--ink)">Prior, nudged toward</text>
+            <text x="724" y="102" fill="var(--ink)">the reading by K</text>
+            <text x="724" y="124" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--model-ink)">x̂ₜ = x̂ + K (yₜ − x̂)</text>
+          </g>
+          <g stroke="var(--ink-2)" stroke-width="1.5" fill="none" marker-end="url(#arr3)">
+            <line x1="210" y1="88" x2="248" y2="88"/>
+            <line x1="440" y1="88" x2="478" y2="88"/>
+            <line x1="670" y1="88" x2="708" y2="88"/>
+          </g>
+          <path d="M795 136 L795 175 L115 175 L115 138" fill="none" stroke="var(--model)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arr3)"/>
+          <text x="455" y="192" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5" fill="var(--model-ink)">CARRIED INTO NEXT PERIOD · t → t+1</text>
+        </svg>
+        </div>
+        <figcaption>One cycle of the update machine. Section 04 produces the observation; this loop decides how much of it to believe. The observation's noise R comes free from the fit's own posterior — nothing new has to be estimated.</figcaption>
+      </figure>
+
+      <div class="col stack" style="padding:0">
+        <h3>The four cases</h3>
+        <p>The gain reduces to a two-by-two: how sure were we before, and how clean is the new reading?</p>
+      </div>
+
+      <div class="quad">
+        <div></div>
+        <div class="ax">New reading is noisy<br>(few deals, no elicitation — R large)</div>
+        <div class="ax">New reading is precise<br>(elicitation answers, many deals — R small)</div>
+        <div class="ax">Prior is sharp<br>(P small)</div>
+        <div class="cell prior"><span class="k">K ≈ 0 · Shrink toward prior</span><span class="t">Keep what you knew. Log the anomaly.</span><span class="d">One odd deal in a quiet quarter does not move a weight that 20 prior deals established. It is recorded as a possible early signal, nothing more.</span></div>
+        <div class="cell regime"><span class="k">K mid · Blend — and test</span><span class="t">Move partway. If the gap is large, suspect a regime change.</span><span class="d">Two sharp beliefs that disagree is the interesting case. A large, repeated surprise means the drift allowance was too small — the world changed. Inflate it and ask the LLM to name what changed.</span></div>
+        <div class="ax">Prior is vague<br>(P large)</div>
+        <div class="cell blend"><span class="k">K mid · Blend weakly</span><span class="t">Nobody knows much. Ask a question.</span><span class="d">This is where the next contrastive query should go: whichever weight has both a vague prior and a noisy reading has the highest expected information gain.</span></div>
+        <div class="cell adapt"><span class="k">K ≈ 1 · Adapt to observation</span><span class="t">Take the reading. This is what elicitation is for.</span><span class="d">A precise answer on a weight you were unsure about should move the state almost all the way. The regulatory scar after the year-2 loss lands here: one "not this fund" answer, low noise, vague prior.</span></div>
+      </div>
+
+      <figure class="fig-band">
+        <div class="fig-scroll">
+        <svg viewBox="0 0 900 300" role="img" aria-labelledby="ts-title">
+          <title id="ts-title">Narrative weight over five fund years: noisy observations, filtered state, and a regime shift</title>
+          <!-- regime shading -->
+          <rect x="427" y="40" width="173" height="180" fill="var(--implicit-soft)" opacity="0.55"/>
+          <text x="513" y="32" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1" fill="var(--implicit-ink)">SURPRISE PERSISTS → DRIFT ALLOWANCE INFLATED</text>
+          <!-- axes -->
+          <line x1="80" y1="220" x2="860" y2="220" stroke="var(--ink-2)" stroke-width="1.2"/>
+          <line x1="80" y1="40" x2="80" y2="220" stroke="var(--ink-2)" stroke-width="1.2"/>
+          <g font-family="IBM Plex Mono, monospace" font-size="11.5" fill="var(--ink-2)">
+            <text x="80" y="242" text-anchor="middle">Y1</text><text x="253" y="242" text-anchor="middle">Y2</text><text x="427" y="242" text-anchor="middle">Y3</text><text x="600" y="242" text-anchor="middle">Y4</text><text x="773" y="242" text-anchor="middle">Y5</text>
+            <text x="70" y="224" text-anchor="end">0</text><text x="70" y="134" text-anchor="end">0.5</text><text x="70" y="44" text-anchor="end">1</text>
+          </g>
+          <!-- uncertainty band -->
+          <polygon points="80,184 167,187.6 253,184 340,182.2 427,148 513,122.8 600,56.2 687,49 773,47.2 860,47.2 860,65.2 773,65.2 687,67 600,77.8 513,155.2 427,184 340,214.6 253,219 167,219 80,219" fill="var(--model-soft)" opacity="0.9"/>
+          <!-- filtered -->
+          <polyline points="80,205.6 167,205.6 253,202 340,198.4 427,166 513,139 600,67 687,58 773,56.2 860,56.2" fill="none" stroke="var(--model)" stroke-width="2.5"/>
+          <!-- observations with error bars -->
+          <g stroke="var(--explicit)" stroke-width="1.5">
+            <line x1="80" y1="148" x2="80" y2="219"/>
+            <line x1="167" y1="180.4" x2="167" y2="219"/>
+            <line x1="253" y1="103" x2="253" y2="211"/>
+            <line x1="340" y1="175" x2="340" y2="229"/>
+            <line x1="427" y1="140.8" x2="427" y2="184"/>
+            <line x1="513" y1="112" x2="513" y2="148"/>
+            <line x1="600" y1="47.2" x2="600" y2="76"/>
+            <line x1="687" y1="42" x2="687" y2="68.8"/>
+            <line x1="773" y1="42" x2="773" y2="94"/>
+            <line x1="860" y1="42" x2="860" y2="67"/>
+          </g>
+          <g fill="var(--explicit)" stroke="var(--surface)" stroke-width="1.5">
+            <circle cx="80" cy="193" r="5"/><circle cx="167" cy="216.4" r="5"/><circle cx="253" cy="157" r="5"/><circle cx="340" cy="202" r="5"/><circle cx="427" cy="162.4" r="5"/><circle cx="513" cy="130" r="5"/><circle cx="600" cy="61.6" r="5"/><circle cx="687" cy="54.4" r="5"/><circle cx="773" cy="67" r="5"/><circle cx="860" cy="49" r="5"/>
+          </g>
+          <!-- annotations -->
+          <text x="268" y="128" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--implicit-ink)">noisy reading (one deal) →</text>
+          <text x="268" y="145" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--implicit-ink)">shrunk toward prior, K ≈ 0.1</text>
+          <text x="612" y="104" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--explicit-ink)">precise reading (elicited) →</text>
+          <text x="612" y="121" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--explicit-ink)">state adapts, K ≈ 0.8</text>
+          <!-- legend -->
+          <g font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-2)">
+            <rect x="80" y="268" width="22" height="10" fill="var(--model-soft)"/><text x="108" y="277">state uncertainty P</text>
+            <line x1="250" y1="273" x2="272" y2="273" stroke="var(--model)" stroke-width="2.5"/><text x="278" y="277">filtered estimate x̂ (the twin)</text>
+            <circle cx="490" cy="273" r="4.5" fill="var(--explicit)"/><line x1="490" y1="263" x2="490" y2="283" stroke="var(--explicit)" stroke-width="1.5"/><text x="500" y="277">each period's codified reading y ± R</text>
+          </g>
+        </svg>
+        </div>
+        <figcaption>w_narrative for one partner across a fund's life, illustrative. Early readings are noisy and the state barely moves. In year 3 the readings start disagreeing with the prior, and keep disagreeing — that is a regime change, not noise, and the filter widens its drift allowance to follow. The year-4 elicitation answer is precise and the state snaps to it. The behavior twin would have flip-flopped on every reading; a frozen artifact would still say 0.08.</figcaption>
+      </figure>
+
+      <div class="col stack" style="padding:0">
+        <h3>What this changes in the process</h3>
+        <ul class="plain">
+          <li><strong>"Supersede" stops being a rule and becomes an update.</strong> Newer evidence overrides older evidence exactly in proportion to how precise it is. A single noisy quarter cannot erase a well-established weight; a single precise elicitation answer can.</li>
+          <li><strong>Constraints move only on precise readings.</strong> A threshold like the 15% floor is part of the state, but with a very sharp prior. Instances alone will never shift it; only a low-noise elicitation answer will. That is the right behavior for something that functions as a rule.</li>
+          <li><strong>Regime change gets detected, not discovered by accident.</strong> Persistent surprise is the temporal version of the conflict in step 4: a variable changed that the model does not track. The same LLM step names it — "post-loss", "year ≥ 4", "Fund IV raise underway".</li>
+          <li><strong>Where to ask next is computed.</strong> The weight with the widest state uncertainty is the one whose next contrastive query pays most.</li>
+          <li><strong>A partner's twin can borrow from the firm.</strong> With few deals, an individual's weights shrink toward the firm-wide prior; as their own evidence accumulates, they earn their own. Same gain, applied across people instead of across time.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ---------- FULL ---------- -->
+    <div class="tier" id="tier-dyn-full" role="tabpanel" aria-labelledby="tab-dyn-full" hidden>
+      <div class="col stack" style="padding:0">
+        <h3>5.1 State-space formulation</h3>
+        <p>Let <code>x_t</code> be the hidden decision function in period <code>t</code>: the stacked region weights <code>w^(k)</code> and constraint thresholds <code>τ</code>. Let <code>y_t</code> be the estimate of those quantities produced by the section 04 fit on period-<code>t</code> instances and elicitation answers, and <code>R_t</code> its Laplace posterior covariance — the ± column in the fitted table. Then:</p>
+        <div class="math">
+<span class="c">transition</span>   x<sub>t</sub> = x<sub>t−1</sub> + η<sub>t</sub>,      η<sub>t</sub> ~ N(0, Q<sub>t</sub>)<br>
+<span class="c">observation</span>  y<sub>t</sub> = x<sub>t</sub> + ε<sub>t</sub>,      ε<sub>t</sub> ~ N(0, R<sub>t</sub>)<br><br>
+<span class="c">predict</span>      x̂<sub>t|t−1</sub> = x̂<sub>t−1</sub>,           P<sub>t|t−1</sub> = P<sub>t−1</sub> + Q<sub>t</sub><br>
+<span class="c">innovation</span>   ν<sub>t</sub> = y<sub>t</sub> − x̂<sub>t|t−1</sub>,       S<sub>t</sub> = P<sub>t|t−1</sub> + R<sub>t</sub><br>
+<span class="c">gain</span>         K<sub>t</sub> = P<sub>t|t−1</sub> S<sub>t</sub><sup>−1</sup><br>
+<span class="c">update</span>       x̂<sub>t</sub> = x̂<sub>t|t−1</sub> + K<sub>t</sub> ν<sub>t</sub>,     P<sub>t</sub> = (I − K<sub>t</sub>) P<sub>t|t−1</sub>
+        </div>
+        <p>The random-walk transition is deliberate: we have no model of <em>how</em> a partner's weights evolve, only that they do, slowly. <code>Q_t</code> is the drift allowance. The scalar case makes the shrinkage reading explicit: <code>K = P/(P+R)</code>, so the update is <code>x̂_t = (1−K)·prior + K·reading</code> — a precision-weighted average, identical in form to James–Stein / empirical-Bayes shrinkage with the prior as the shrinkage target.</p>
+      </div>
+
+      <div class="col stack" style="padding:0">
+        <h3>5.2 Where R and Q come from</h3>
+        <p><strong>R<sub>t</sub> is not estimated separately.</strong> It is the posterior covariance of the period-<code>t</code> Bradley–Terry fit (4.4), which already reflects how many instances the period contained, how well-separated they were, and whether elicitation answers were present. A period with two deals and no questions produces a wide <code>R_t</code> and is shrunk away; a period with a bisection on the ownership floor produces a near-degenerate <code>R_t</code> on <code>τ_own</code> and is adopted.</p>
+        <p><strong>Q<sub>t</sub> is the one genuinely free quantity</strong>, and it should be small by default and adaptive on evidence. Use the normalized innovation:</p>
+        <div class="math">
+NIS<sub>t</sub> = ν<sub>t</sub><sup>T</sup> S<sub>t</sub><sup>−1</sup> ν<sub>t</sub>   ~ χ²<sub>d</sub>   under "no structural change"<br><br>
+<span class="c">if NIS<sub>t</sub> > χ²<sub>d, 0.99</sub> for m consecutive periods (m = 2 is reasonable at quarterly cadence):</span><br>
+    Q<sub>t</sub> ← α · Q<sub>t</sub>  (α ≫ 1)  on the components of ν<sub>t</sub> that dominate NIS<sub>t</sub>,<br>
+    and hand those components to the LLM step of 4.5 to propose the regime variable.
+        </div>
+        <p>A single large innovation is an anomaly and is absorbed by the gain — that is the point of shrinkage. A <em>run</em> of large innovations is a regime change, and the correct response is to stop trusting the prior on the affected components. Inflating <code>Q</code> does exactly that; it is the temporal analogue of adding a region feature. Once the LLM names the regime ("post-loss", "year ≥ 4"), it becomes a region in the section 04 model and <code>Q</code> returns to baseline — the state has been re-indexed, not merely widened.</p>
+      </div>
+
+      <div class="col stack" style="padding:0">
+        <h3>5.3 Constraints in the state</h3>
+        <p>Thresholds <code>τ_j</code> live in <code>x_t</code> with two modifications. Their transition noise is near zero — constraints do not drift, they get re-decided — and their observation noise from instances alone is set to infinity: no number of chosen deals above 15% and rejected deals below it can move <code>τ_own</code> on its own, because that pattern is equally consistent with any threshold in the gap. Only elicitation (a bisection answer, <code>R → 0</code>) updates a threshold, and when it does, <code>K ≈ 1</code>. The filter thus reproduces the rule-like semantics of a constraint without special-casing it.</p>
+      </div>
+
+      <div class="col stack" style="padding:0">
+        <h3>5.4 Hierarchical shrinkage across experts</h3>
+        <p>For a firm with several partners, initialize each partner's state at the firm-level mean <code>μ</code> with prior covariance <code>Σ_between</code>, estimated from the dispersion of partner-level fits. A new partner or a partner with few deals is then shrunk toward the firm; a partner with a long record earns their own weights. The between-partner dispersion is also diagnostic: a criterion whose weight varies widely across partners <em>and</em> does not separate by region is the multi-expert values conflict of 4.5, and is surfaced for the committee rather than averaged.</p>
+      </div>
+
+      <div class="col stack" style="padding:0">
+        <h3>5.5 What the filter feeds into determinism</h3>
+        <p>Section 06 places each region on the spectrum using entropy of the choice probability. With the filter in place, two more quantities are available per region and per weight: the state uncertainty <code>P_t</code> and the drift allowance <code>Q_t</code>. The placement rule becomes:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>State condition</th><th>Reading</th><th>Placement</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">P small, Q small, H ≈ 0</td><td>Stable, settled, predictable</td><td>Rule or procedure</td></tr>
+              <tr><td class="mono">P small, Q small, H high</td><td>Genuinely a judgment; we know it well</td><td>Guided judgment with weights attached</td></tr>
+              <tr><td class="mono">P large</td><td>Under-evidenced</td><td>Guided judgment; queue elicitation query</td></tr>
+              <tr><td class="mono">Q inflated (regime flagged)</td><td>Something changed and is unnamed</td><td>Escalate; re-elicit; hold prior artifact as provisional</td></tr>
+              <tr><td class="mono">τ with R → 0 from elicitation</td><td>Confirmed constraint</td><td>Constraint</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The consequence is that the codified artifact — the rules, the guidance, the constraints, the escalation list — is a <em>function of the filtered state</em>, and is regenerated each period. Placement drifts with the evidence; nobody re-decides it in a meeting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DETERMINISM ============ -->
+<section class="part" id="determinism">
+  <div class="wide stack">
+    <div class="head">
+      <span class="eyebrow">06 · Deterministic vs. non-deterministic artifacts</span>
+      <h2>Rigid where rigidity is safe, judgment where it must be</h2>
+      <p class="lede">The last question in any codification is "should this be a rule the agent follows, or a judgment the agent makes?" With a fitted choice model, this stops being a design meeting and becomes a measurement.</p>
+    </div>
+
+    <figure class="fig-band">
+      <div class="fig-scroll">
+      <svg viewBox="0 0 900 200" role="img" aria-labelledby="spec-title">
+        <title id="spec-title">The determinism spectrum from hard constraint to human escalation</title>
+        <defs>
+          <linearGradient id="spec" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0" stop-color="var(--model)"/>
+            <stop offset="1" stop-color="var(--implicit)"/>
+          </linearGradient>
+        </defs>
+        <rect x="20" y="86" width="860" height="14" fill="url(#spec)" rx="2"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.2" fill="var(--ink-2)">
+          <text x="20" y="72">DETERMINISTIC</text>
+          <text x="880" y="72" text-anchor="end">NON-DETERMINISTIC</text>
+        </g>
+        <g font-family="IBM Plex Sans, sans-serif" font-size="13.5" fill="var(--ink)" text-anchor="middle">
+          <g><line x1="60" y1="100" x2="60" y2="118" stroke="var(--ink-2)" stroke-width="1.5"/><text x="60" y="138">Constraint</text><text x="60" y="156" font-size="12" fill="var(--ink-2)">"never X"</text></g>
+          <g><line x1="230" y1="100" x2="230" y2="118" stroke="var(--ink-2)" stroke-width="1.5"/><text x="230" y="138">Procedure</text><text x="230" y="156" font-size="12" fill="var(--ink-2)">"do A, then B"</text></g>
+          <g><line x1="400" y1="100" x2="400" y2="118" stroke="var(--ink-2)" stroke-width="1.5"/><text x="400" y="138">Scored heuristic</text><text x="400" y="156" font-size="12" fill="var(--ink-2)">"score &gt; θ → X"</text></g>
+          <g><line x1="570" y1="100" x2="570" y2="118" stroke="var(--ink-2)" stroke-width="1.5"/><text x="570" y="138">Guided judgment</text><text x="570" y="156" font-size="12" fill="var(--ink-2)">weights + examples</text></g>
+          <g><line x1="740" y1="100" x2="740" y2="118" stroke="var(--ink-2)" stroke-width="1.5"/><text x="740" y="138">Open judgment</text><text x="740" y="156" font-size="12" fill="var(--ink-2)">agent decides</text></g>
+          <g><line x1="860" y1="100" x2="860" y2="118" stroke="var(--ink-2)" stroke-width="1.5"/><text x="860" y="138">Escalate</text><text x="860" y="156" font-size="12" fill="var(--ink-2)">human decides</text></g>
+        </g>
+        <g font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1" fill="var(--ink-2)" text-anchor="middle">
+          <text x="60" y="40">H ≈ 0 · irreversible</text>
+          <text x="230" y="40">H ≈ 0 · stable</text>
+          <text x="400" y="40">H low · 1 feature</text>
+          <text x="570" y="40">H high · reducible</text>
+          <text x="740" y="40">H high · irreducible</text>
+          <text x="860" y="40">out of provenance</text>
+        </g>
+      </svg>
+      </div>
+      <figcaption>H is the entropy of the fitted choice probability within a region. Position on the spectrum is determined by entropy, stability across refits, reversibility of the downside, and whether the situation is inside the evidence the model was fit on.</figcaption>
+    </figure>
+
+    <div class="col stack" style="padding:0">
+      <h3>The placement rules</h3>
+      <p>For each region <code>R_k</code> — each named situation the model found — ask five questions in order. The first that applies wins. Every input to these questions is a quantity the fitted, filtered model already produces.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Question</th><th>If yes</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Is the downside irreversible or high-blast-radius?</strong></td><td>Constraint on the downside, regardless of what else the region does</td><td>A wrong judgment call that can be undone is a learning event. One that cannot is a loss. Cost asymmetry beats predictability.</td></tr>
+          <tr><td><strong>Is the choice near-deterministic (low entropy) and stable across refits?</strong></td><td>Procedure or scored heuristic</td><td>The expert always does this here. Judgment adds variance without adding value, and rules are cheap to run at volume.</td></tr>
+          <tr><td><strong>Is the entropy high but the region reducible — a variable might still be found?</strong></td><td>Guided judgment: emit weights, the contrasting examples, and the open question</td><td>The agent should decide, but with the tradeoff made explicit and the evidence attached, so its choice can be audited and its exceptions harvested.</td></tr>
+          <tr><td><strong>Has the filter flagged a regime change on this region?</strong></td><td>Escalate and re-elicit; hold the prior artifact as provisional</td><td>Persistent surprise (section 05) means a variable changed that the model does not name yet. Acting on the old rule is acting on a stale state.</td></tr>
+          <tr><td><strong>Is the situation outside the provenance set?</strong></td><td>Escalate — at runtime, dynamically</td><td>Any region can be pushed to escalation for a specific case. A reasoning twin that knows what it does not know is worth more than one that guesses.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col stack" style="padding:0">
+      <h3>The VC decision, placed</h3>
+    </div>
+    <div class="spectrum-placements">
+      <div class="sp"><span class="h">Constraint</span><strong>Ownership ≥ 15% and lead</strong><span>H ≈ 0 across 17 instances; downside (a passive minority position) is irreversible for the fund's model.</span></div>
+      <div class="sp"><span class="h">Constraint · scoped</span><strong>No unlicensed money movement</strong><span>Post-loss region only. Confirmed by elicitation. Would have been a preference before year 2.</span></div>
+      <div class="sp"><span class="h">Procedure</span><strong>Diligence checklist</strong><span>Two-week technical diligence — with one codified exception: known founder from the network substitutes for it.</span></div>
+      <div class="sp"><span class="h">Guided judgment</span><strong>Team vs. price vs. growth</strong><span>High entropy, reducible. The agent scores with fitted weights for the current fund year and cites the closest prior deals.</span></div>
+      <div class="sp"><span class="h">Escalate</span><strong>Narrative bets in year 4+</strong><span>Partners disagree uniformly on how much fund story should weigh. Values conflict, not a missing variable. Investment committee decides.</span></div>
+    </div>
+
+    <div class="col stack" style="padding:0">
+      <p>Two failure modes bracket this. <strong>Over-codification</strong> produces an agent that applies a rule outside its provenance and cannot tell it has done so. <strong>Under-codification</strong> produces an agent that re-litigates settled questions inconsistently. The spectrum is the mechanism for placing each region between them deliberately — and, because placement is a function of the filtered state, re-placing it automatically each period as the evidence changes. Nobody re-decides "is this a rule?" in a meeting; the state does.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BEYOND ============ -->
+<section class="part" id="beyond">
+  <div class="col stack">
+    <div class="head">
+      <span class="eyebrow">07 · Conclusion and what lies beyond</span>
+      <h2>Codification is a living contract, not a document</h2>
+    </div>
+    <p>The argument in one line: an agent built from transcripts inherits a policy; an agent built from a recovered reward inherits a way of deciding. The first is a behavior twin and fails at Deal D. The second is a reasoning twin and passes on Deal D for the right reason.</p>
+    <p>The single model — a conditional choice function with explicit constraints — unifies four things that today are handled separately and by hand: tradeoff weights (fitted), context (regions), conflict (residuals that point at missing variables), and the rule-versus-judgment decision (entropy). Wrapping it in a state-space filter adds the fifth: <em>time</em>. Each round of codification becomes a noisy reading of a drifting hidden state; the gain decides how much to believe it; persistent surprise flags a regime change and sends the LLM to name it. Provenance comes free, which means every element of the codified artifact can be disputed by the expert it claims to represent — and every element carries a date and an uncertainty.</p>
+
+    <h3>What to look at next</h3>
+    <ul class="plain">
+      <li><strong>The agent's own reasoning has the same gap.</strong> A language model's stated rationale is not guaranteed to be the computation that produced its action. Its traces are L1 and L2 too. The implication is that the agent should carry the fitted <code>w</code>, <code>R_k</code>, and <code>h</code> explicitly in its context and score against them, rather than reconstruct a rationale afterward — and that the same recovery process should be run on the agent's decisions, periodically, to check that it is still the twin it was deployed as.</li>
+      <li><strong>The drift model is the thinnest part.</strong> Section 05 treats the decision function as a random walk with an adaptive drift allowance. That is enough to shrink and to detect regime change, but it says nothing about <em>why</em> weights move. A structural transition model — fund age, portfolio state, recent outcomes as drivers of <code>Q</code> — would let the twin anticipate change instead of only tracking it. And with quarterly cadence and a handful of deals per period, the innovation test has few degrees of freedom; how early a regime change can be called with honest confidence is open.</li>
+      <li><strong>Alternative generation is the weakest link.</strong> The fitted reward is only as good as the rejected alternatives it was fit against. Reconstructing what was <em>not</em> chosen, from a record that only documents what was, deserves its own method.</li>
+      <li><strong>Multi-expert reconciliation is a governance problem wearing a modeling costume.</strong> When two partners' instances disagree uniformly, the model can locate the disagreement precisely but has no business resolving it. Surfacing it as a standing question for the committee may be the most valuable output of the whole process.</li>
+      <li><strong>Goodhart.</strong> Once criteria are explicit and scored, behavior — human or agent — may optimize the score rather than the intent. The safeguard is the loop itself: overrides are evidence, and a rising override rate on a region that used to be stable is the signal that the artifact has drifted from the person.</li>
+    </ul>
+    <p>The practical shift is small in mechanics and large in posture. Stop asking experts to write down their reasoning. Ask them to make judgments on cases the model chose, let the model do the weighing, and let the language model do the reading. The reasoning was never in the transcript. It was in the choices, waiting to be asked the right question.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="col">
+    Draft · September 2026 · The VC scenario, deals, fitted values, and time series are illustrative constructions, not data. Model form follows Bradley–Terry choice modeling as used in inverse RL and RLHF reward modeling, made region-conditional and constraint-aware, wrapped in a linear-Gaussian state-space filter with innovation-based adaptation of process noise.
+  </div>
+</footer>
+
+<script>
+  (function(){
+    document.querySelectorAll('.tabs').forEach(function(group){
+      var tabs = group.querySelectorAll('[role="tab"]');
+      tabs.forEach(function(t){
+        t.addEventListener('click', function(){
+          tabs.forEach(function(o){
+            var sel = o === t;
+            o.setAttribute('aria-selected', sel ? 'true' : 'false');
+            document.getElementById(o.getAttribute('aria-controls')).hidden = !sel;
+          });
+        });
+      });
+    });
+  })();
+</script>
+</body>
+</html>

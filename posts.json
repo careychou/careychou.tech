@@ -1,5 +1,20 @@
 [
   {
+    "title": "Reasoning Twins: Codifying the Decision Nobody Wrote Down",
+    "slug": "reasoning-twins-codifying-the-decision-nobody-wrote-down",
+    "date": "Sep 12, 2026",
+    "dt": "2026-09-12T00:00:00",
+    "tags": [
+      "ai-agents",
+      "digital-twin",
+      "inverse-rl",
+      "decision-modeling"
+    ],
+    "href": "/writing/reasoning-twins-codifying-the-decision-nobody-wrote-down.html",
+    "badge": "Interactive",
+    "excerpt": "Transcripts and memos capture what an expert did — not the tradeoff that decided it. Recovering that hidden decision function so an agent can reason in new situations instead of imitating old ones."
+  },
+  {
     "title": "How Do You Know an AI Answer Is Good Enough to Act On?",
     "slug": "how-do-you-know-an-ai-answer-is-good-enough-to-act-on",
     "date": "Aug 2, 2026",
@@ -11,7 +26,7 @@
       "ai-agent"
     ],
     "href": "/writing/how-do-you-know-an-ai-answer-is-good-enough-to-act-on.html",
-    "excerpt": "An analyst asks an agent a question about a product category and gets back a clean answer: here are the strongest item affinities, here is what is different abo\u2026",
+    "excerpt": "An analyst asks an agent a question about a product category and gets back a clean answer: here are the strongest item affinities, here is what is different abo…",
     "mins": 13
   },
   {
@@ -22,16 +37,16 @@
     "tags": [],
     "href": "/writing/ai-cognitive-quadrant.html",
     "badge": "Interactive",
-    "excerpt": "A map for where rules, ML, GenAI, and agents actually fit\u200a\u2014\u200aand what each one asks of the people around\u00a0it."
+    "excerpt": "A map for where rules, ML, GenAI, and agents actually fit — and what each one asks of the people around it."
   },
   {
-    "title": "From Digital Twin to Phygital Twin: Codifying Process Knowledge into Agentic Robotic Process\u2026",
+    "title": "From Digital Twin to Phygital Twin: Codifying Process Knowledge into Agentic Robotic Process…",
     "slug": "from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process",
     "date": "Jun 27, 2026",
     "dt": "2026-06-27T15:48:27",
     "tags": [],
     "href": "/writing/from-digital-twin-to-phygital-twin-codifying-process-knowledge-into-agentic-robotic-process.html",
-    "excerpt": "We\u2019ve all seen LLM agents codify a person\u2019s skills into a digital twin. But a lot of what makes work actually work isn\u2019t a skill you can hand off\u200a\u2014\u200ait\u2019s tribal \u2026",
+    "excerpt": "We’ve all seen LLM agents codify a person’s skills into a digital twin. But a lot of what makes work actually work isn’t a skill you can hand off — it’s tribal …",
     "mins": 6
   },
   {
@@ -41,7 +56,7 @@
     "dt": "2026-05-31T20:27:16",
     "tags": [],
     "href": "/writing/from-super-teammate-to-metatwin-toward-self-building-digital-twins-of-expertise.html",
-    "excerpt": "An open-source skill pack: withsuper-analyst, that could learn a dataset and produce a rules playbook. super-optimizer, which tunes a playbook against historica\u2026",
+    "excerpt": "An open-source skill pack: withsuper-analyst, that could learn a dataset and produce a rules playbook. super-optimizer, which tunes a playbook against historica…",
     "mins": 4
   },
   {
@@ -51,7 +66,7 @@
     "dt": "2026-02-02T02:23:24",
     "tags": [],
     "href": "/writing/test-time-training-ttt-discover.html",
-    "excerpt": "Most of our experience with Large Language Models (LLMs) involves a frozen brain. You send a prompt, and the model\u200a\u2014\u200awith weights fixed in time\u200a\u2014\u200apredicts the n\u2026",
+    "excerpt": "Most of our experience with Large Language Models (LLMs) involves a frozen brain. You send a prompt, and the model — with weights fixed in time — predicts the n…",
     "mins": 4
   },
   {
@@ -61,7 +76,7 @@
     "dt": "2025-12-16T18:15:21",
     "tags": [],
     "href": "/writing/the-new-human-roles-of-ai-why-boundaries-not-models-define-the-future-of-work.html",
-    "excerpt": "The Wall Street Journal recently published an article titled \u201cFour New Jobs That May Be in Our AI Future.\u201d https://www.wsj.com/tech/ai/new-jobs-ai-future-fefd4b\u2026",
+    "excerpt": "The Wall Street Journal recently published an article titled “Four New Jobs That May Be in Our AI Future.” https://www.wsj.com/tech/ai/new-jobs-ai-future-fefd4b…",
     "mins": 4
   },
   {
@@ -71,7 +86,7 @@
     "dt": "2025-11-21T02:14:40",
     "tags": [],
     "href": "/writing/nested-learning-for-recommender-systems-bringing-fast-and-slow-learning-to-personalization.html",
-    "excerpt": "Modern recommendation systems face a\u00a0paradox:",
+    "excerpt": "Modern recommendation systems face a paradox:",
     "mins": 9
   },
   {
@@ -85,13 +100,13 @@
     "mins": 9
   },
   {
-    "title": "Evolving LLM Prompts to Generate Customer Shopping Narratives: AI-Guided Evolution with Cohesive\u2026",
+    "title": "Evolving LLM Prompts to Generate Customer Shopping Narratives: AI-Guided Evolution with Cohesive…",
     "slug": "evolving-llm-prompts-to-generate-customer-shopping-narratives-ai-guided-evolution-with-cohesive",
     "date": "Jul 19, 2025",
     "dt": "2025-07-19T15:39:14",
     "tags": [],
     "href": "/writing/evolving-llm-prompts-to-generate-customer-shopping-narratives-ai-guided-evolution-with-cohesive.html",
-    "excerpt": "In a previous article, we explored how combining large language models (LLMs) with reinforcement learning can create smarter business rules. Building on the Alp\u2026",
+    "excerpt": "In a previous article, we explored how combining large language models (LLMs) with reinforcement learning can create smarter business rules. Building on the Alp…",
     "mins": 12
   }
 ]
