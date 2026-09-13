@@ -3,7 +3,7 @@
 > This is the **authoritative** description of the site's look, feel, and
 > structure. `site/assets/site.css` is the implementation; this doc is the
 > intent. When they disagree, reconcile them — do not let them drift. The
-> `carey-cloudflare-publish` skill *references* this file rather than copying it.
+> `careychou-tech-site-ops` skill *references* this file rather than copying it.
 
 The site expresses one idea: **creativity × design × science × human-centered AI**,
 rendered in a **liquid glass + flow** visual language on a deep near-black canvas.

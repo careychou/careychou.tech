@@ -67,5 +67,5 @@ they coexist. If you want ONLY Git deploys, just stop running `deploy.sh`.
   `*.log`, `devserver.out`, `.DS_Store` — no secrets are committed.
 - The `site/writing/img/` images (~14 MB) are committed intentionally; they're
   real site assets and are needed for a Git-based build/deploy.
-- The confidentiality gate (`carey-cloudflare-publish` skill) still applies
+- The confidentiality gate (`careychou-tech-site-ops` skill) still applies
   before any deploy, Git-based or manual.
