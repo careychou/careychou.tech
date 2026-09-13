@@ -43,22 +43,23 @@ create_with_token() {
   fi
   # Store a CLEAN remote (no secret in .git/config); auth is supplied per-push.
   if git remote get-url origin >/dev/null 2>&1; then
-    git remote set-url origin "https://x-access-token@github.com/$SLUG.git"
+    git remote set-url origin "https://github.com/$SLUG.git"
   else
-    git remote add origin "https://x-access-token@github.com/$SLUG.git"
+    git remote add origin "https://github.com/$SLUG.git"
   fi
 }
 
-# Push using an ephemeral GIT_ASKPASS so the token is never written to disk or argv.
+# Push using a one-off tokenized URL, then repoint tracking to the clean 'origin'
+# so the token is NEVER persisted in .git/config.
 token_push() {
-  local branch="$1" ask rc
-  ask="$(mktemp)"
-  printf '#!/bin/sh\nprintf "%%s" "$GITHUB_TOKEN"\n' > "$ask"
-  chmod +x "$ask"
-  GIT_ASKPASS="$ask" git push -u origin "$branch"
-  rc=$?
-  rm -f "$ask"
-  return $rc
+  local branch="$1" rc
+  git push "https://x-access-token:${GITHUB_TOKEN}@github.com/$SLUG.git" "$branch" 2>&1 \
+    | sed -E "s/${GITHUB_TOKEN}/***/g"
+  rc=${PIPESTATUS[0]}
+  [ "$rc" -eq 0 ] || return "$rc"
+  git fetch origin -q "$branch" 2>/dev/null || true
+  git branch --set-upstream-to="origin/$branch" "$branch" >/dev/null 2>&1 || true
+  return 0
 }
 
 AUTH_MODE=""
