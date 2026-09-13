@@ -4,8 +4,17 @@ The site lives in this local git repo. This runbook connects it to a **dedicated
 GitHub repo** — `github.com/careychou/careychou.tech` — for version history and
 (optionally) Git-based auto-deploy.
 
-State as of setup: local repo on branch `main`, committed, **no remote yet**,
-`.env`/secrets ignored, no cached GitHub credential on this machine.
+State: **connected** — `origin` → `github.com/careychou/careychou.tech` (public),
+branch `main` pushed. `.env`/secrets ignored; no token stored in `.git/config`.
+
+Future pushes: the stored remote is the clean HTTPS URL, so `git push` will ask
+for credentials (this machine has no cached GitHub credential). Use your PAT —
+either let macOS keychain store it on first prompt, or push non-interactively:
+```bash
+TOKEN="$(tr -d ' \t\r\n' < ~/Documents/personal/github.cred)"
+git push "https://x-access-token:${TOKEN}@github.com/careychou/careychou.tech.git" main
+```
+(Installing `gh` + `gh auth login` also works and makes plain `git push` seamless.)
 
 ---
 
