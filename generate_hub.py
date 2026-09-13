@@ -61,7 +61,7 @@ PAGE = """<!DOCTYPE html>
       <a class="brand" href="/"><span class="mark" aria-hidden="true"></span> Carey&nbsp;Chou</a>
       <div class="nav-links">
         <a href="/writing/" class="hide-sm">Writing</a>
-        <a href="/art/" class="hide-sm">Art</a>
+        <a href="/art/" class="hide-sm">Creative works</a>
         <a href="/">← Home</a>
       </div>
     </div>

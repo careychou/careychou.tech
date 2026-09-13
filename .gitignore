@@ -9,3 +9,10 @@ cf-*.png
 wrangler-login.out
 
 devserver.out
+
+# secrets & local env (defensive)
+.env
+.env.*
+venv/
+.venv/
+__pycache__/
